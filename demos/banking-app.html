@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Banking App Demo | Jingyu He</title>
+  <link rel="stylesheet" href="../style.css" />
+  <style>
+    /* ===== BANKING APP DEMO STYLES ===== */
+
+    .demo-wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 4rem;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #2563eb;
+      margin-bottom: 2rem;
+    }
+    .back-link:hover { text-decoration: underline; }
+
+    .demo-header {
+      background: linear-gradient(135deg, #1e293b, #7c1d1d);
+      border-radius: 14px;
+      padding: 2rem 2.25rem;
+      margin-bottom: 2rem;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+    .demo-header-icon { font-size: 2.8rem; }
+    .demo-header h1  { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem; }
+    .demo-header p   { font-size: 0.92rem; color: #94a3b8; margin: 0; }
+    .lang-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.2rem 0.65rem;
+      border-radius: 50px;
+      margin-left: 0.5rem;
+    }
+
+    /* ===== SCREEN: CREATE ACCOUNT ===== */
+    #screenCreate {
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .create-card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+    .create-icon  { font-size: 3.5rem; margin-bottom: 1rem; }
+    .create-title { font-size: 1.4rem; font-weight: 800; color: #1e293b; margin-bottom: 0.4rem; }
+    .create-sub   { font-size: 0.9rem; color: #6b7280; margin-bottom: 2rem; }
+    .create-form  { text-align: left; }
+    .form-label   { font-size: 0.88rem; font-weight: 700; color: #374151; display: block; margin-bottom: 0.4rem; }
+    .form-field   {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      margin-bottom: 1.25rem;
+      transition: border-color 0.2s;
+    }
+    .form-field:focus { outline: none; border-color: #dc2626; box-shadow: 0 0 0 3px rgba(220,38,38,0.10); }
+    .create-btn {
+      width: 100%;
+      padding: 0.8rem;
+      background: #dc2626;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    .create-btn:hover { background: #b91c1c; box-shadow: 0 4px 14px rgba(220,38,38,0.3); }
+
+    /* ===== SCREEN: DASHBOARD ===== */
+    #screenDash { display: none; }
+
+    /* Top bank card */
+    .bank-card {
+      background: linear-gradient(135deg, #dc2626, #991b1b);
+      border-radius: 16px;
+      padding: 2rem;
+      color: #fff;
+      margin-bottom: 1.75rem;
+      box-shadow: 0 8px 24px rgba(220,38,38,0.30);
+      position: relative;
+      overflow: hidden;
+    }
+    .bank-card::after {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 160px; height: 160px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 50%;
+    }
+    .bank-card-label    { font-size: 0.82rem; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 0.5rem; }
+    .bank-card-balance  { font-size: 2.8rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 0.25rem; }
+    .bank-card-name     { font-size: 1rem; font-weight: 600; margin-bottom: 0.2rem; }
+    .bank-card-acct     { font-size: 0.82rem; color: rgba(255,255,255,0.6); font-family: 'Courier New', monospace; }
+    .bank-card-row      { display: flex; justify-content: space-between; align-items: flex-end; }
+    .bank-card-chip     { font-size: 1.8rem; }
+
+    /* Stat row */
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+    }
+    .mini-stat {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 1rem;
+      text-align: center;
+    }
+    .mini-stat-num   { font-size: 1.35rem; font-weight: 800; color: #1e293b; }
+    .mini-stat-num.green { color: #16a34a; }
+    .mini-stat-num.red   { color: #dc2626; }
+    .mini-stat-label { font-size: 0.75rem; color: #6b7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+
+    /* Operations panel */
+    .ops-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-bottom: 1.75rem;
+    }
+    .op-card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .op-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .op-input {
+      width: 100%;
+      padding: 0.65rem 1rem;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      margin-bottom: 0.9rem;
+      transition: border-color 0.2s;
+    }
+    .op-input:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.10); }
+    .op-btn {
+      width: 100%;
+      padding: 0.65rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s, box-shadow 0.2s;
+    }
+    .op-btn:hover { opacity: 0.88; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+    .op-btn.deposit  { background: #16a34a; color: #fff; }
+    .op-btn.withdraw { background: #dc2626; color: #fff; }
+    .op-note { font-size: 0.8rem; color: #6b7280; margin-top: 0.35rem; }
+
+    /* Toast notification */
+    .toast {
+      display: none;
+      padding: 0.7rem 1.1rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-bottom: 1.25rem;
+      animation: fadeIn 0.25s ease;
+    }
+    @keyframes fadeIn { from {opacity:0;transform:translateY(-6px);} to {opacity:1;transform:translateY(0);} }
+    .toast.success { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+    .toast.error   { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+
+    /* Transaction history */
+    .history-card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 1.25rem;
+    }
+    .history-head {
+      padding: 1rem 1.5rem;
+      background: #f8fafc;
+      border-bottom: 1px solid #e5e7eb;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #1e293b;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .history-clear {
+      font-size: 0.8rem;
+      color: #6b7280;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .history-clear:hover { color: #dc2626; }
+    .history-list { max-height: 280px; overflow-y: auto; }
+    .history-empty {
+      padding: 2.5rem;
+      text-align: center;
+      color: #9ca3af;
+      font-size: 0.9rem;
+    }
+    .tx-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem 1.5rem;
+      border-bottom: 1px solid #f1f5f9;
+      animation: fadeIn 0.25s ease;
+    }
+    .tx-item:last-child { border-bottom: none; }
+    .tx-left { display: flex; align-items: center; gap: 0.85rem; }
+    .tx-icon {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .tx-icon.dep { background: #dcfce7; }
+    .tx-icon.wd  { background: #fee2e2; }
+    .tx-icon.open { background: #dbeafe; }
+    .tx-desc  { font-size: 0.9rem; font-weight: 600; color: #1e293b; }
+    .tx-time  { font-size: 0.78rem; color: #9ca3af; }
+    .tx-amount { font-size: 0.95rem; font-weight: 700; }
+    .tx-amount.dep  { color: #16a34a; }
+    .tx-amount.wd   { color: #dc2626; }
+    .tx-amount.open { color: #2563eb; }
+
+    /* Logout btn */
+    .logout-btn {
+      background: none;
+      border: 1px solid #e5e7eb;
+      color: #6b7280;
+      padding: 0.5rem 1.2rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      transition: all 0.2s;
+    }
+    .logout-btn:hover { background: #fee2e2; color: #b91c1c; border-color: #fca5a5; }
+
+    @media (max-width: 540px) {
+      .ops-grid  { grid-template-columns: 1fr; }
+      .stat-row  { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== NAVIGATION BAR ===== -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="../index.html" class="nav-logo">Jingyu He</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="../index.html" class="nav-link">Home</a></li>
+        <li><a href="../about.html" class="nav-link">About Me</a></li>
+        <li><a href="../education.html" class="nav-link">Education</a></li>
+        <li><a href="../projects.html" class="nav-link active">Projects</a></li>
+        <li><a href="../experience.html" class="nav-link">Experience</a></li>
+        <li><a href="../documents.html" class="nav-link">Documents</a></li>
+        <li><a href="../contact.html" class="nav-link">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="demo-wrap">
+
+    <a href="../projects.html" class="back-link">&#8592; Back to Projects</a>
+
+    <div class="demo-header">
+      <div class="demo-header-icon">&#127981;</div>
+      <div>
+        <h1>Banking App <span class="lang-badge">Java</span></h1>
+        <p>Create an account, deposit and withdraw money, and view your full transaction history. All data lives in your browser session.</p>
+      </div>
+    </div>
+
+    <!-- ===== SCREEN 1: CREATE ACCOUNT ===== -->
+    <div id="screenCreate">
+      <div class="create-card">
+        <div class="create-icon">&#127981;</div>
+        <div class="create-title">Open a New Account</div>
+        <div class="create-sub">Enter your name and an opening deposit to get started.</div>
+
+        <div class="create-form">
+          <label class="form-label" for="acctName">Full Name</label>
+          <input type="text" id="acctName" class="form-field" placeholder="e.g. Jingyu He" maxlength="40" />
+
+          <label class="form-label" for="openDeposit">Opening Deposit ($)</label>
+          <input type="number" id="openDeposit" class="form-field" placeholder="e.g. 500.00" min="0" step="0.01" />
+
+          <button class="create-btn" onclick="createAccount()">&#43; Create Account</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SCREEN 2: DASHBOARD ===== -->
+    <div id="screenDash">
+
+      <!-- Toast notification -->
+      <div class="toast" id="toast"></div>
+
+      <!-- Bank card -->
+      <div class="bank-card">
+        <div class="bank-card-row">
+          <div>
+            <div class="bank-card-label">Current Balance</div>
+            <div class="bank-card-balance" id="dashBalance">$0.00</div>
+          </div>
+          <div class="bank-card-chip">&#128179;</div>
+        </div>
+        <div style="height:1px; background:rgba(255,255,255,0.15); margin: 1.25rem 0;"></div>
+        <div class="bank-card-row">
+          <div>
+            <div class="bank-card-name" id="dashName">Account Holder</div>
+            <div class="bank-card-acct" id="dashAcct">ACCT #0000 0000</div>
+          </div>
+          <div style="font-size:0.75rem; color:rgba(255,255,255,0.55);">Demo Bank</div>
+        </div>
+      </div>
+
+      <!-- Stats row -->
+      <div class="stat-row">
+        <div class="mini-stat">
+          <div class="mini-stat-num green" id="statDeposited">$0.00</div>
+          <div class="mini-stat-label">Total Deposited</div>
+        </div>
+        <div class="mini-stat">
+          <div class="mini-stat-num red" id="statWithdrawn">$0.00</div>
+          <div class="mini-stat-label">Total Withdrawn</div>
+        </div>
+        <div class="mini-stat">
+          <div class="mini-stat-num" id="statTxCount">0</div>
+          <div class="mini-stat-label">Transactions</div>
+        </div>
+      </div>
+
+      <!-- Operations -->
+      <div class="ops-grid">
+
+        <!-- Deposit -->
+        <div class="op-card">
+          <div class="op-title">&#11014; Deposit</div>
+          <input type="number" id="depositAmt" class="op-input" placeholder="Amount ($)" min="0.01" step="0.01" />
+          <input type="text"   id="depositDesc" class="op-input" placeholder="Description (optional)" maxlength="40" />
+          <button class="op-btn deposit" onclick="doDeposit()">Deposit Funds</button>
+          <div class="op-note">Minimum deposit: $0.01</div>
+        </div>
+
+        <!-- Withdraw -->
+        <div class="op-card">
+          <div class="op-title">&#11015; Withdraw</div>
+          <input type="number" id="withdrawAmt" class="op-input" placeholder="Amount ($)" min="0.01" step="0.01" />
+          <input type="text"   id="withdrawDesc" class="op-input" placeholder="Description (optional)" maxlength="40" />
+          <button class="op-btn withdraw" onclick="doWithdraw()">Withdraw Funds</button>
+          <div class="op-note">Cannot exceed current balance</div>
+        </div>
+
+      </div>
+
+      <!-- Transaction history -->
+      <div class="history-card">
+        <div class="history-head">
+          Transaction History
+          <button class="history-clear" onclick="clearHistory()">Clear History</button>
+        </div>
+        <div class="history-list" id="historyList">
+          <div class="history-empty" id="historyEmpty">No transactions yet.</div>
+        </div>
+      </div>
+
+      <button class="logout-btn" onclick="logout()">&#8592; Close Account &amp; Start Over</button>
+    </div>
+
+  </div>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="container">
+      <p class="footer-name">Jingyu He</p>
+      <p class="footer-text">Computer Programming &amp; Analysis Student &mdash; George Brown College</p>
+      <p class="footer-copy">&copy; 2024 Jingyu He. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="../script.js"></script>
+  <script>
+    /* ===== BANKING APP LOGIC ===== */
+
+    var account = {
+      name: "",
+      number: "",
+      balance: 0,
+      totalDeposited: 0,
+      totalWithdrawn: 0,
+      transactions: []
+    };
+
+    function fmt(n) {
+      return "$" + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    function genAcctNumber() {
+      var r = function() { return Math.floor(1000 + Math.random() * 9000); };
+      return "ACCT #" + r() + " " + r();
+    }
+
+    function getTime() {
+      var d = new Date();
+      return d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    }
+
+    function createAccount() {
+      var name = document.getElementById("acctName").value.trim();
+      var dep  = parseFloat(document.getElementById("openDeposit").value);
+
+      if (!name) {
+        alert("Please enter your full name."); return;
+      }
+      if (isNaN(dep) || dep < 0) {
+        alert("Please enter a valid opening deposit (can be 0)."); return;
+      }
+
+      account.name         = name;
+      account.number       = genAcctNumber();
+      account.balance      = dep;
+      account.totalDeposited = dep;
+      account.totalWithdrawn = 0;
+      account.transactions = [];
+
+      if (dep > 0) {
+        account.transactions.push({ type: "open", desc: "Account Opening Deposit", amount: dep, time: getTime() });
+      } else {
+        account.transactions.push({ type: "open", desc: "Account Opened", amount: 0, time: getTime() });
+      }
+
+      document.getElementById("screenCreate").style.display = "none";
+      document.getElementById("screenDash").style.display   = "block";
+      refreshDash();
+      showToast("Welcome, " + name + "! Your account has been created.", "success");
+    }
+
+    function refreshDash() {
+      document.getElementById("dashBalance").textContent   = fmt(account.balance);
+      document.getElementById("dashName").textContent      = account.name;
+      document.getElementById("dashAcct").textContent      = account.number;
+      document.getElementById("statDeposited").textContent = fmt(account.totalDeposited);
+      document.getElementById("statWithdrawn").textContent = fmt(account.totalWithdrawn);
+      document.getElementById("statTxCount").textContent   = account.transactions.length;
+
+      renderHistory();
+    }
+
+    function doDeposit() {
+      var amt  = parseFloat(document.getElementById("depositAmt").value);
+      var desc = document.getElementById("depositDesc").value.trim() || "Deposit";
+
+      if (isNaN(amt) || amt <= 0) {
+        showToast("Please enter a valid deposit amount.", "error"); return;
+      }
+      if (amt > 1000000) {
+        showToast("Maximum single deposit is $1,000,000.", "error"); return;
+      }
+
+      account.balance        += amt;
+      account.totalDeposited += amt;
+      account.transactions.unshift({ type: "dep", desc: desc, amount: amt, time: getTime() });
+
+      document.getElementById("depositAmt").value  = "";
+      document.getElementById("depositDesc").value = "";
+      refreshDash();
+      showToast("Deposited " + fmt(amt) + " successfully.", "success");
+    }
+
+    function doWithdraw() {
+      var amt  = parseFloat(document.getElementById("withdrawAmt").value);
+      var desc = document.getElementById("withdrawDesc").value.trim() || "Withdrawal";
+
+      if (isNaN(amt) || amt <= 0) {
+        showToast("Please enter a valid withdrawal amount.", "error"); return;
+      }
+      if (amt > account.balance) {
+        showToast("Insufficient funds. Your balance is " + fmt(account.balance) + ".", "error"); return;
+      }
+
+      account.balance        -= amt;
+      account.totalWithdrawn += amt;
+      account.transactions.unshift({ type: "wd", desc: desc, amount: amt, time: getTime() });
+
+      document.getElementById("withdrawAmt").value  = "";
+      document.getElementById("withdrawDesc").value = "";
+      refreshDash();
+      showToast("Withdrew " + fmt(amt) + " successfully.", "success");
+    }
+
+    function renderHistory() {
+      var list  = document.getElementById("historyList");
+      var empty = document.getElementById("historyEmpty");
+
+      if (account.transactions.length === 0) {
+        list.innerHTML = '<div class="history-empty" id="historyEmpty">No transactions yet.</div>';
+        return;
+      }
+
+      var html = "";
+      account.transactions.forEach(function(tx) {
+        var iconClass, amountClass, amountStr, iconEmoji;
+        if (tx.type === "dep") {
+          iconClass = "dep"; amountClass = "dep"; amountStr = "+" + fmt(tx.amount); iconEmoji = "&#11014;";
+        } else if (tx.type === "wd") {
+          iconClass = "wd";  amountClass = "wd";  amountStr = "-" + fmt(tx.amount); iconEmoji = "&#11015;";
+        } else {
+          iconClass = "open"; amountClass = "open";
+          amountStr = tx.amount > 0 ? "+" + fmt(tx.amount) : "—";
+          iconEmoji = "&#127981;";
+        }
+        html +=
+          '<div class="tx-item">' +
+            '<div class="tx-left">' +
+              '<div class="tx-icon ' + iconClass + '">' + iconEmoji + '</div>' +
+              '<div>' +
+                '<div class="tx-desc">' + escHtml(tx.desc) + '</div>' +
+                '<div class="tx-time">' + tx.time + '</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="tx-amount ' + amountClass + '">' + amountStr + '</div>' +
+          '</div>';
+      });
+      list.innerHTML = html;
+    }
+
+    function clearHistory() {
+      if (!confirm("Clear all transaction history? This cannot be undone.")) return;
+      account.transactions = [];
+      renderHistory();
+    }
+
+    function logout() {
+      if (!confirm("Close this account and start over?")) return;
+      account = { name:"", number:"", balance:0, totalDeposited:0, totalWithdrawn:0, transactions:[] };
+      document.getElementById("acctName").value    = "";
+      document.getElementById("openDeposit").value = "";
+      document.getElementById("screenDash").style.display   = "none";
+      document.getElementById("screenCreate").style.display = "block";
+    }
+
+    function showToast(msg, type) {
+      var t = document.getElementById("toast");
+      t.textContent  = msg;
+      t.className    = "toast " + type;
+      t.style.display = "block";
+      clearTimeout(t._timer);
+      t._timer = setTimeout(function() { t.style.display = "none"; }, 4000);
+    }
+
+    function escHtml(s) {
+      return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    }
+  </script>
+</body>
+</html>

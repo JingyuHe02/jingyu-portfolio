@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projects | Jingyu He</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ===== DEMO BUTTON STRIP ===== */
+    .demo-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1.25rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid #e5e7eb;
+    }
+    .demo-strip-label {
+      font-size: 0.82rem;
+      color: #6b7280;
+      font-weight: 600;
+    }
+    .demo-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.55rem 1.25rem;
+      background: #1e293b;
+      color: #fff;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+    }
+    .demo-btn:hover {
+      background: #2563eb;
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(37,99,235,0.30);
+      transform: translateY(-1px);
+    }
+    .demo-btn-live {
+      background: #2563eb;
+    }
+    .demo-btn-live:hover {
+      background: #1d4ed8;
+    }
+    .demo-pulse {
+      display: inline-block;
+      width: 8px; height: 8px;
+      background: #4ade80;
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.5; transform: scale(1.3); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== NAVIGATION BAR ===== -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">Jingyu He</a>
+
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="about.html" class="nav-link">About Me</a></li>
+        <li><a href="education.html" class="nav-link">Education</a></li>
+        <li><a href="projects.html" class="nav-link active">Projects</a></li>
+        <li><a href="experience.html" class="nav-link">Experience</a></li>
+        <li><a href="documents.html" class="nav-link">Documents</a></li>
+        <li><a href="contact.html" class="nav-link">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ===== PAGE HEADER ===== -->
+  <section class="page-header">
+    <div class="container">
+      <h1 class="page-title">My Projects</h1>
+      <p class="page-subtitle">A collection of projects I built during my studies at George Brown College.</p>
+    </div>
+  </section>
+
+  <!-- ===== PROJECTS SECTION ===== -->
+  <section class="section">
+    <div class="container">
+
+      <!-- ===== PROJECT 1: WEB SCRAPER ===== -->
+      <div class="project-detail-card">
+        <div class="project-detail-header project-color-1">
+          <span class="project-detail-icon">&#128202;</span>
+          <div>
+            <h2 class="project-detail-title">Web Scraper</h2>
+            <span class="project-lang-badge">Python</span>
+          </div>
+        </div>
+        <div class="project-detail-body">
+          <div class="project-detail-grid">
+            <div class="project-detail-item">
+              <h4>&#128221; Summary</h4>
+              <p>This project is a Python-based web scraper that automates the process of collecting data from websites.</p>
+            </div>
+            <div class="project-detail-item">
+              <h4>&#128161; Vision</h4>
+              <p>The goal is to collect data from websites automatically without needing to copy information by hand.</p>
+            </div>
+            <div class="project-detail-item">
+              <h4>&#9989; Requirements</h4>
+              <p>The system can fetch web pages and save the extracted data into a structured format for further use.</p>
+            </div>
+            <div class="project-detail-item">
+              <h4>&#128396; Design</h4>
+              <p>The project uses Python with the <code>requests</code> library to send HTTP requests and retrieve page content.</p>
+            </div>
+          </div>
+          <div class="project-detail-impl">
+            <h4>&#128736; Implementation</h4>
+            <p>Built using Python and basic data processing techniques. The scraper sends requests to target URLs, parses the HTML response, and saves the extracted information locally.</p>
+          </div>
+
+          <!-- Demo button -->
+          <div class="demo-strip">
+            <span class="demo-strip-label">Try the interactive demo below:</span>
+            <a href="projects-demo/web-scraper.html" class="demo-btn demo-btn-live">
+              <span class="demo-pulse"></span> Run Live Demo
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PROJECT 2: AI CHATBOT ===== -->
+      <div class="project-detail-card">
+        <div class="project-detail-header project-color-2">
+          <span class="project-detail-icon">&#129302;</span>
+          <div>
+            <h2 class="project-detail-title">AI Chatbot</h2>
+            <span class="project-lang-badge">Python</span>
+          </div>
+        </div>
+        <div class="project-detail-body">
+          <div class="project-detail-grid">
+            <div class="project-detail-item">
+              <h4>&#128221; Summary</h4>
+              <p>This project is a simple chatbot that can hold basic conversations with users using text-based input and output.</p>
+            </div>
+            <div class="project-detail-item">
+              <h4>&#128161; Vision</h4>
+              <p>The goal is to simulate a basic conversation system that can respond to common user inputs in a natural way.</p>
+            </div>
+            <div class="project-detail-item">
+              <h4>&#9989; Requirements</h4>
+              <p>Users can type messages and receive responses. The system handles different types of questions and simple dialogue.</p>
+            </div>
+            <div class="project-detail-item">
+              <h4>&#128396; Design</h4>
+              <p>The chatbot uses simple if-else logic and text pattern matching to generate appropriate responses to user input.</p>
+            </div>
+          </div>
+          <div class="project-detail-impl">
+            <h4>&#128736; Implementation</h4>
+            <p>Built using Python. The program reads user input, processes it with conditional logic, and outputs a response. This project helped me practice Python string manipulation and control flow.</p>
+          </div>
+
+          <!-- Demo button -->
+          <div class="demo-strip">
+            <span class="demo-strip-label">Try the interactive demo below:</span>
+            <a href="projects-demo/chatbot.html" class="demo-btn demo-btn-live">
+              <span class="demo-pulse"></span> Run Live Demo
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PROJECT 3: BANKING APP ===== -->
+      <div class="project-detail-card">
+        <div class="project-detail-header project-color-3">
+          <span class="project-detail-icon">&#127981;</span>
+          <div>
+            <h2 class="project-detail-title">Banking App</h2>
+            <span class="project-lang-badge">Java</span>
+          </div>
+        </div>
+        <div class="project-detail-body">
+          <div class="project-detail-grid">
+            <div class="project-detail-item">
+              <h4>&#128221; Summary</h4>
+              <p>This project is a simple banking system that simulates basic banking operations through a console interface.</p>
+            </div>
+            <div class="project-detail-item">
+              <h4>&#128161; Vision</h4>
+              <p>The goal is to simulate banking operations such as creating accounts, depositing money, and withdrawing funds.</p>
+            </div>
+            <div class="project-detail-item">
+              <h4>&#9989; Requirements</h4>
+              <p>Users can create a bank account, deposit money, withdraw money, and check their current balance.</p>
+            </div>
+            <div class="project-detail-item">
+              <h4>&#128396; Design</h4>
+              <p>The system uses object-oriented programming with classes representing accounts and transactions.</p>
+            </div>
+          </div>
+          <div class="project-detail-impl">
+            <h4>&#128736; Implementation</h4>
+            <p>Built using Java. The project uses classes and methods to model accounts and banking logic. This project helped me practice OOP principles including encapsulation and method design.</p>
+          </div>
+
+          <!-- Demo button -->
+          <div class="demo-strip">
+            <span class="demo-strip-label">Try the interactive demo below:</span>
+            <a href="projects-demo/banking-app.html" class="demo-btn demo-btn-live">
+              <span class="demo-pulse"></span> Run Live Demo
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PROJECT 4: PERSONAL WEBSITE ===== -->
+      <div class="project-detail-card">
+        <div class="project-detail-header project-color-4">
+          <span class="project-detail-icon">&#127760;</span>
+          <div>
+            <h2 class="project-detail-title">Personal Website</h2>
+            <span class="project-lang-badge">HTML &amp; CSS</span>
+          </div>
+        </div>
+        <div class="project-detail-body">
+          <div class="project-detail-grid">
+            <div class="project-detail-item">
+              <h4>&#128221; Summary</h4>
+              <p>This project is a basic personal website designed to show information about me and allow easy navigation.</p>
+            </div>
+            <div class="project-detail-item">
+              <h4>&#128161; Vision</h4>
+              <p>The goal is to design a clean and simple web page that presents information in a professional layout.</p>
+            </div>
+            <div class="project-detail-item">
+              <h4>&#9989; Requirements</h4>
+              <p>The website shows personal information and includes navigation links to move between different sections.</p>
+            </div>
+            <div class="project-detail-item">
+              <h4>&#128396; Design</h4>
+              <p>Uses HTML for page structure and CSS for visual styling, layout, and responsive design.</p>
+            </div>
+          </div>
+          <div class="project-detail-impl">
+            <h4>&#128736; Implementation</h4>
+            <p>Built using HTML and CSS. This project helped me practice web page structure, styling techniques, and how to create clean and readable layouts.</p>
+          </div>
+
+          <!-- Demo button -->
+          <div class="demo-strip">
+            <span class="demo-strip-label">Try the interactive demo below:</span>
+            <a href="projects-demo/personal-website.html" class="demo-btn demo-btn-live">
+              <span class="demo-pulse"></span> Run Live Demo
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PROJECT 5: NODE.JS APPLICATION ===== -->
+      <div class="project-detail-card">
+        <div class="project-detail-header project-color-5">
+          <span class="project-detail-icon">&#128200;</span>
+          <div>
+            <h2 class="project-detail-title">Node.js Application</h2>
+            <span class="project-lang-badge">JavaScript / Node.js</span>
+          </div>
+        </div>
+        <div class="project-detail-body">
+          <div class="project-detail-grid">
+            <div class="project-detail-item">
+              <h4>&#128221; Summary</h4>
+              <p>This project is a backend web application that handles requests and serves responses using a server-side environment.</p>
+            </div>
+            <div class="project-detail-item">
+              <h4>&#128161; Vision</h4>
+              <p>The goal is to build a server-based system that can process incoming requests and return appropriate responses.</p>
+            </div>
+            <div class="project-detail-item">
+              <h4>&#9989; Requirements</h4>
+              <p>The system can handle HTTP requests from clients and send back data or HTML responses via defined routes.</p>
+            </div>
+            <div class="project-detail-item">
+              <h4>&#128396; Design</h4>
+              <p>Uses Node.js as the server runtime and the Express framework to define routes and manage middleware.</p>
+            </div>
+          </div>
+          <div class="project-detail-impl">
+            <h4>&#128736; Implementation</h4>
+            <p>Built using JavaScript and Node.js with the Express framework. This project helped me understand how servers work, how to handle routes, and how to build a basic backend for a web application.</p>
+          </div>
+
+          <!-- Demo button -->
+          <div class="demo-strip">
+            <span class="demo-strip-label">Try the interactive demo below:</span>
+            <a href="projects-demo/nodejs-app.html" class="demo-btn demo-btn-live">
+              <span class="demo-pulse"></span> Run Live Demo
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="container">
+      <p class="footer-name">Jingyu He</p>
+      <p class="footer-text">Computer Programming &amp; Analysis Student &mdash; George Brown College</p>
+      <div class="footer-links">
+        <a href="contact.html">Contact</a>
+        <a href="documents.html">Documents</a>
+        <a href="about.html">About Me</a>
+      </div>
+      <div class="footer-social">
+        <a href="mailto:hejingyu1104@gmail.com">&#128231; hejingyu1104@gmail.com</a>
+        <a href="https://github.com/JingyuHe02" target="_blank" rel="noopener">&#128029; github.com/JingyuHe02</a>
+        <a href="https://www.linkedin.com/in/%E9%9D%96%E5%AE%87-%E4%BD%95-3a275b269/" target="_blank" rel="noopener">&#128101; LinkedIn Profile</a>
+      </div>
+      <p class="footer-copy">&copy; 2024 Jingyu He. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

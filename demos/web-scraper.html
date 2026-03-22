@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Web Scraper Demo | Jingyu He</title>
+  <link rel="stylesheet" href="../style.css" />
+  <style>
+    /* ===== DEMO PAGE STYLES ===== */
+
+    .demo-wrap {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 4rem;
+    }
+
+    /* Back link */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #2563eb;
+      margin-bottom: 2rem;
+    }
+    .back-link:hover { text-decoration: underline; }
+
+    /* Demo header */
+    .demo-header {
+      background: linear-gradient(135deg, #1e293b, #1e3a5f);
+      border-radius: 14px;
+      padding: 2rem 2.25rem;
+      margin-bottom: 2rem;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+    .demo-header-icon { font-size: 2.8rem; }
+    .demo-header h1 { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem; }
+    .demo-header p  { font-size: 0.92rem; color: #94a3b8; margin: 0; }
+
+    /* App card */
+    .app-card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 2rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      margin-bottom: 1.5rem;
+    }
+
+    /* URL input row */
+    .url-row {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .url-input {
+      flex: 1;
+      min-width: 220px;
+      padding: 0.65rem 1rem;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-family: 'Courier New', monospace;
+      color: #374151;
+      background: #f9fafb;
+      transition: border-color 0.2s;
+    }
+    .url-input:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+    }
+    .scrape-btn {
+      padding: 0.65rem 1.5rem;
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    .scrape-btn:hover { background: #1d4ed8; box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+    .scrape-btn:disabled { background: #93c5fd; cursor: not-allowed; box-shadow: none; }
+
+    /* Preset buttons */
+    .preset-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #6b7280;
+      margin-bottom: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .preset-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .preset-btn {
+      padding: 0.35rem 0.9rem;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      border-radius: 50px;
+      font-size: 0.83rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: #374151;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .preset-btn:hover { background: #dbeafe; border-color: #93c5fd; color: #1d4ed8; }
+
+    /* Progress bar */
+    .progress-wrap { display: none; margin-bottom: 1.5rem; }
+    .progress-label {
+      font-size: 0.83rem;
+      font-weight: 600;
+      color: #6b7280;
+      margin-bottom: 0.4rem;
+    }
+    .progress-bar-outer {
+      height: 8px;
+      background: #e5e7eb;
+      border-radius: 50px;
+      overflow: hidden;
+    }
+    .progress-bar-inner {
+      height: 100%;
+      background: linear-gradient(90deg, #2563eb, #60a5fa);
+      border-radius: 50px;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    /* Results area */
+    .results-area { display: none; }
+
+    .result-stat-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .stat-box {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 1rem;
+      text-align: center;
+    }
+    .stat-num {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #2563eb;
+      line-height: 1;
+      margin-bottom: 0.25rem;
+    }
+    .stat-label {
+      font-size: 0.8rem;
+      color: #6b7280;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .result-section { margin-bottom: 1.5rem; }
+    .result-section h3 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #1e293b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .result-field {
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      font-size: 0.92rem;
+      color: #374151;
+      margin-bottom: 0.5rem;
+    }
+    .result-field strong { color: #1e293b; }
+
+    .links-list { display: flex; flex-direction: column; gap: 0.4rem; }
+    .link-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-family: 'Courier New', monospace;
+      color: #0369a1;
+    }
+    .link-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #2563eb;
+      flex-shrink: 0;
+    }
+
+    .log-box {
+      background: #0f172a;
+      border-radius: 10px;
+      padding: 1.25rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.82rem;
+      color: #94a3b8;
+      line-height: 1.9;
+    }
+    .log-line-green  { color: #4ade80; }
+    .log-line-yellow { color: #fbbf24; }
+    .log-line-blue   { color: #60a5fa; }
+    .log-line-white  { color: #f1f5f9; }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 2.5rem 1rem;
+      color: #9ca3af;
+    }
+    .empty-state .empty-icon { font-size: 3rem; margin-bottom: 0.75rem; }
+    .empty-state p { font-size: 0.95rem; }
+
+    /* Code badge */
+    .lang-badge {
+      display: inline-block;
+      background: rgba(37,99,235,0.1);
+      color: #2563eb;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.2rem 0.65rem;
+      border-radius: 50px;
+      margin-left: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== NAVIGATION BAR ===== -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="../index.html" class="nav-logo">Jingyu He</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="../index.html" class="nav-link">Home</a></li>
+        <li><a href="../about.html" class="nav-link">About Me</a></li>
+        <li><a href="../education.html" class="nav-link">Education</a></li>
+        <li><a href="../projects.html" class="nav-link active">Projects</a></li>
+        <li><a href="../experience.html" class="nav-link">Experience</a></li>
+        <li><a href="../documents.html" class="nav-link">Documents</a></li>
+        <li><a href="../contact.html" class="nav-link">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="demo-wrap">
+
+    <!-- Back link -->
+    <a href="../projects.html" class="back-link">&#8592; Back to Projects</a>
+
+    <!-- Demo header -->
+    <div class="demo-header">
+      <div class="demo-header-icon">&#128202;</div>
+      <div>
+        <h1>Web Scraper <span class="lang-badge">Python</span></h1>
+        <p>Enter a URL and click Scrape to extract data from the web page. This demo simulates how the Python scraper works.</p>
+      </div>
+    </div>
+
+    <!-- Main app card -->
+    <div class="app-card">
+
+      <div class="preset-label">Quick Select — Try a Sample URL</div>
+      <div class="preset-row">
+        <button class="preset-btn" onclick="setPreset('https://en.wikipedia.org/wiki/Python_(programming_language)')">Wikipedia — Python</button>
+        <button class="preset-btn" onclick="setPreset('https://github.com/trending')">GitHub Trending</button>
+        <button class="preset-btn" onclick="setPreset('https://news.ycombinator.com/')">Hacker News</button>
+        <button class="preset-btn" onclick="setPreset('https://www.georgebrown.ca/programs')">George Brown</button>
+        <button class="preset-btn" onclick="setPreset('https://realpython.com/')">Real Python</button>
+      </div>
+
+      <div class="url-row">
+        <input
+          type="text"
+          id="urlInput"
+          class="url-input"
+          placeholder="https://example.com"
+          value="https://en.wikipedia.org/wiki/Python_(programming_language)"
+        />
+        <button class="scrape-btn" id="scrapeBtn" onclick="runScraper()">&#128202; Scrape</button>
+      </div>
+
+      <!-- Progress bar -->
+      <div class="progress-wrap" id="progressWrap">
+        <div class="progress-label" id="progressLabel">Connecting to server...</div>
+        <div class="progress-bar-outer">
+          <div class="progress-bar-inner" id="progressBar"></div>
+        </div>
+      </div>
+
+      <!-- Empty state (initial) -->
+      <div class="empty-state" id="emptyState">
+        <div class="empty-icon">&#128202;</div>
+        <p>Enter a URL above and click <strong>Scrape</strong> to extract data.</p>
+      </div>
+
+      <!-- Results -->
+      <div class="results-area" id="resultsArea">
+
+        <!-- Stats row -->
+        <div class="result-stat-row">
+          <div class="stat-box">
+            <div class="stat-num" id="statLinks">0</div>
+            <div class="stat-label">Links Found</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num" id="statImages">0</div>
+            <div class="stat-label">Images</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num" id="statWords">0</div>
+            <div class="stat-label">Words</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num" id="statTime">0ms</div>
+            <div class="stat-label">Fetch Time</div>
+          </div>
+        </div>
+
+        <!-- Page info -->
+        <div class="result-section">
+          <h3>&#128196; Page Information</h3>
+          <div class="result-field"><strong>Title:</strong> <span id="resTitle"></span></div>
+          <div class="result-field"><strong>Description:</strong> <span id="resDesc"></span></div>
+          <div class="result-field"><strong>URL:</strong> <span id="resUrl" style="font-family:monospace;font-size:0.88rem;"></span></div>
+          <div class="result-field"><strong>Status:</strong> <span id="resStatus" style="color:#16a34a;font-weight:700;"></span></div>
+        </div>
+
+        <!-- Links found -->
+        <div class="result-section">
+          <h3>&#128279; Extracted Links</h3>
+          <div class="links-list" id="linksList"></div>
+        </div>
+
+        <!-- Content preview -->
+        <div class="result-section">
+          <h3>&#128221; Content Preview</h3>
+          <div class="result-field" id="resContent" style="line-height:1.7;"></div>
+        </div>
+
+        <!-- Console log -->
+        <div class="result-section">
+          <h3>&#9998; Console Output (Python Simulation)</h3>
+          <div class="log-box" id="logBox"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="container">
+      <p class="footer-name">Jingyu He</p>
+      <p class="footer-text">Computer Programming &amp; Analysis Student &mdash; George Brown College</p>
+      <p class="footer-copy">&copy; 2024 Jingyu He. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="../script.js"></script>
+  <script>
+    /* ===== WEB SCRAPER DEMO LOGIC ===== */
+
+    // Simulated data for different preset URLs
+    var siteData = {
+      "wikipedia": {
+        title: "Python (programming language) - Wikipedia",
+        desc:  "Python is a high-level, general-purpose programming language. Its design philosophy emphasizes code readability with the use of significant indentation.",
+        status: "200 OK",
+        links: 24,
+        images: 8,
+        words: 3842,
+        time: 312,
+        extractedLinks: [
+          "https://en.wikipedia.org/wiki/Programming_language",
+          "https://en.wikipedia.org/wiki/Guido_van_Rossum",
+          "https://en.wikipedia.org/wiki/Object-oriented_programming",
+          "https://en.wikipedia.org/wiki/Dynamic_programming_language",
+          "https://en.wikipedia.org/wiki/CPython",
+          "https://en.wikipedia.org/wiki/Standard_library",
+          "https://en.wikipedia.org/wiki/Open-source_software"
+        ],
+        content: "Python is a high-level, general-purpose programming language. Its design philosophy emphasizes code readability with the use of significant indentation. Python is dynamically typed and garbage-collected. It supports multiple programming paradigms, including structured, object-oriented, and functional programming."
+      },
+      "github": {
+        title: "Trending repositories on GitHub today · GitHub",
+        desc:  "See what the GitHub community is most excited about today.",
+        status: "200 OK",
+        links: 87,
+        images: 31,
+        words: 1204,
+        time: 489,
+        extractedLinks: [
+          "https://github.com/trending/python",
+          "https://github.com/trending/javascript",
+          "https://github.com/trending/java",
+          "https://github.com/features/copilot",
+          "https://github.com/explore",
+          "https://github.com/topics/machine-learning",
+          "https://github.com/topics/web-development"
+        ],
+        content: "Explore trending repositories on GitHub. Discover what developers around the world are building. Browse popular projects in Python, JavaScript, TypeScript, Go, Rust and more. See open source tools, libraries, and frameworks gaining momentum in the developer community."
+      },
+      "hackernews": {
+        title: "Hacker News",
+        desc:  "A social news website focusing on computer science and entrepreneurship.",
+        status: "200 OK",
+        links: 63,
+        images: 0,
+        words: 892,
+        time: 178,
+        extractedLinks: [
+          "https://news.ycombinator.com/newest",
+          "https://news.ycombinator.com/ask",
+          "https://news.ycombinator.com/show",
+          "https://news.ycombinator.com/jobs",
+          "https://news.ycombinator.com/submit",
+          "https://news.ycombinator.com/login",
+          "https://ycombinator.com"
+        ],
+        content: "Hacker News is a social news website run by the investment fund and startup incubator Y Combinator. The site focuses on computer science and entrepreneurship. Users submit links to articles and vote on them. The front page lists the most popular submissions. It is widely read among software developers."
+      },
+      "georgebrown": {
+        title: "Programs & Courses | George Brown College",
+        desc:  "Explore George Brown College's full-time programs across technology, business, health, and more.",
+        status: "200 OK",
+        links: 142,
+        images: 19,
+        words: 2107,
+        time: 553,
+        extractedLinks: [
+          "https://www.georgebrown.ca/programs/computer-programming-and-analysis",
+          "https://www.georgebrown.ca/programs/data-science",
+          "https://www.georgebrown.ca/future-students",
+          "https://www.georgebrown.ca/research",
+          "https://www.georgebrown.ca/coop-and-careers",
+          "https://www.georgebrown.ca/contact",
+          "https://www.georgebrown.ca/apply"
+        ],
+        content: "George Brown College offers a wide range of programs in technology, business, design, health sciences, and more. The Computer Programming and Analysis program prepares students for careers in software development, web development, and systems analysis. Programs are designed with industry input to ensure graduates are job-ready."
+      },
+      "realpython": {
+        title: "Real Python - Python Tutorials for Developers",
+        desc:  "Learn Python online by working through Python tutorials, examples, and exercises crafted by experts.",
+        status: "200 OK",
+        links: 56,
+        images: 14,
+        words: 1543,
+        time: 267,
+        extractedLinks: [
+          "https://realpython.com/tutorials/all/",
+          "https://realpython.com/python-basics/",
+          "https://realpython.com/python-web-scraping-practical-introduction/",
+          "https://realpython.com/beautiful-soup-web-scraper-python/",
+          "https://realpython.com/python-requests/",
+          "https://realpython.com/python-json/",
+          "https://realpython.com/courses/"
+        ],
+        content: "Real Python is an online learning platform for Python developers. It offers tutorials, video courses, and learning paths for beginners and experienced developers. Topics include web scraping, APIs, Django, Flask, data science, automation, and more. All tutorials are written and reviewed by professional Python developers."
+      },
+      "default": {
+        title: "Sample Web Page - Extracted Data",
+        desc:  "This is a simulated page description extracted from the target URL.",
+        status: "200 OK",
+        links: 18,
+        images: 6,
+        words: 741,
+        time: 334,
+        extractedLinks: [
+          "https://example.com/about",
+          "https://example.com/contact",
+          "https://example.com/products",
+          "https://example.com/blog",
+          "https://example.com/privacy",
+          "https://example.com/terms",
+          "https://example.com/sitemap.xml"
+        ],
+        content: "This is the extracted text content from the target web page. The web scraper sent an HTTP GET request to the specified URL, received the HTML response, parsed it using Python's requests library, and extracted the page title, meta description, all hyperlinks, and body text content."
+      }
+    };
+
+    function setPreset(url) {
+      document.getElementById("urlInput").value = url;
+    }
+
+    function getSiteKey(url) {
+      if (url.includes("wikipedia")) return "wikipedia";
+      if (url.includes("github"))    return "github";
+      if (url.includes("ycombinator") || url.includes("hacker")) return "hackernews";
+      if (url.includes("georgebrown")) return "georgebrown";
+      if (url.includes("realpython")) return "realpython";
+      return "default";
+    }
+
+    function runScraper() {
+      var url = document.getElementById("urlInput").value.trim();
+      if (!url) {
+        alert("Please enter a URL first.");
+        return;
+      }
+      if (!url.startsWith("http")) {
+        url = "https://" + url;
+        document.getElementById("urlInput").value = url;
+      }
+
+      var btn = document.getElementById("scrapeBtn");
+      btn.disabled = true;
+      btn.textContent = "Scraping...";
+
+      // Hide results, show progress
+      document.getElementById("emptyState").style.display  = "none";
+      document.getElementById("resultsArea").style.display = "none";
+      document.getElementById("progressWrap").style.display = "block";
+
+      var bar   = document.getElementById("progressBar");
+      var label = document.getElementById("progressLabel");
+      var steps = [
+        [10,  "Resolving DNS..."],
+        [28,  "Connecting to server..."],
+        [45,  "Sending GET request..."],
+        [62,  "Receiving response..."],
+        [78,  "Parsing HTML content..."],
+        [90,  "Extracting links and text..."],
+        [100, "Done!"]
+      ];
+
+      var i = 0;
+      function stepProgress() {
+        if (i >= steps.length) {
+          // Show results after a short pause
+          setTimeout(function() {
+            showResults(url);
+            document.getElementById("progressWrap").style.display = "none";
+            btn.disabled = false;
+            btn.textContent = "&#128202; Scrape";
+            btn.innerHTML = "&#128202; Scrape";
+          }, 300);
+          return;
+        }
+        bar.style.width   = steps[i][0] + "%";
+        label.textContent = steps[i][1];
+        i++;
+        setTimeout(stepProgress, 320);
+      }
+      stepProgress();
+    }
+
+    function showResults(url) {
+      var key  = getSiteKey(url);
+      var data = siteData[key];
+
+      document.getElementById("statLinks").textContent  = data.links;
+      document.getElementById("statImages").textContent = data.images;
+      document.getElementById("statWords").textContent  = data.words.toLocaleString();
+      document.getElementById("statTime").textContent   = data.time + "ms";
+
+      document.getElementById("resTitle").textContent  = data.title;
+      document.getElementById("resDesc").textContent   = data.desc;
+      document.getElementById("resUrl").textContent    = url;
+      document.getElementById("resStatus").textContent = data.status;
+      document.getElementById("resContent").textContent = data.content;
+
+      // Links list
+      var linksList = document.getElementById("linksList");
+      linksList.innerHTML = "";
+      data.extractedLinks.forEach(function(link) {
+        var item = document.createElement("div");
+        item.className = "link-item";
+        item.innerHTML = '<div class="link-dot"></div>' + link;
+        linksList.appendChild(item);
+      });
+
+      // Console log
+      var now = new Date();
+      var ts  = now.toTimeString().split(" ")[0];
+      document.getElementById("logBox").innerHTML =
+        '<span class="log-line-green">[' + ts + '] Scraper initialized</span>\n' +
+        '<span class="log-line-blue">[' + ts + '] Target URL: ' + url + '</span>\n' +
+        '<span class="log-line-yellow">[' + ts + '] Sending GET request...</span>\n' +
+        '<span class="log-line-green">[' + ts + '] Response received: HTTP ' + data.status + '</span>\n' +
+        '<span class="log-line-white">[' + ts + '] Parsing HTML with BeautifulSoup...</span>\n' +
+        '<span class="log-line-white">[' + ts + '] Found ' + data.links + ' &lt;a&gt; tags</span>\n' +
+        '<span class="log-line-white">[' + ts + '] Found ' + data.images + ' &lt;img&gt; tags</span>\n' +
+        '<span class="log-line-white">[' + ts + '] Extracted ~' + data.words + ' words of text content</span>\n' +
+        '<span class="log-line-green">[' + ts + '] Data saved to output.json</span>\n' +
+        '<span class="log-line-green">[' + ts + '] Scraping complete in ' + data.time + 'ms</span>';
+
+      document.getElementById("resultsArea").style.display = "block";
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Chatbot Demo | Jingyu He</title>
+  <link rel="stylesheet" href="../style.css" />
+  <style>
+    /* ===== CHATBOT DEMO STYLES ===== */
+
+    .demo-wrap {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 4rem;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #2563eb;
+      margin-bottom: 2rem;
+    }
+    .back-link:hover { text-decoration: underline; }
+
+    .demo-header {
+      background: linear-gradient(135deg, #1e293b, #134e4a);
+      border-radius: 14px;
+      padding: 2rem 2.25rem;
+      margin-bottom: 2rem;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+    .demo-header-icon { font-size: 2.8rem; }
+    .demo-header h1  { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem; }
+    .demo-header p   { font-size: 0.92rem; color: #94a3b8; margin: 0; }
+    .lang-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.2rem 0.65rem;
+      border-radius: 50px;
+      margin-left: 0.5rem;
+    }
+
+    /* Chat window */
+    .chat-window {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.10);
+      display: flex;
+      flex-direction: column;
+      height: 580px;
+    }
+
+    /* Chat header bar */
+    .chat-header {
+      background: linear-gradient(90deg, #0d9488, #0f766e);
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .chat-bot-avatar {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.20);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+    }
+    .chat-bot-name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .chat-bot-status {
+      font-size: 0.8rem;
+      color: #99f6e4;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .status-online {
+      width: 7px; height: 7px;
+      background: #4ade80;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .chat-header-badge {
+      margin-left: auto;
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.7rem;
+      border-radius: 50px;
+    }
+
+    /* Messages area */
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      background: #f8fafc;
+    }
+
+    /* Individual message */
+    .msg {
+      display: flex;
+      align-items: flex-end;
+      gap: 0.6rem;
+      max-width: 80%;
+      animation: fadeInMsg 0.25s ease;
+    }
+    @keyframes fadeInMsg {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .msg.bot  { align-self: flex-start; }
+    .msg.user { align-self: flex-end; flex-direction: row-reverse; }
+
+    .msg-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: #0d9488;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .msg-bubble {
+      padding: 0.7rem 1rem;
+      border-radius: 14px;
+      font-size: 0.93rem;
+      line-height: 1.6;
+      max-width: 100%;
+    }
+    .msg.bot  .msg-bubble { background: #fff; border: 1px solid #e5e7eb; color: #374151; border-bottom-left-radius: 4px; }
+    .msg.user .msg-bubble { background: #0d9488; color: #fff; border-bottom-right-radius: 4px; }
+
+    .msg-time {
+      font-size: 0.72rem;
+      color: #9ca3af;
+      margin-top: 0.2rem;
+      text-align: right;
+    }
+    .msg.bot  .msg-time { text-align: left; padding-left: 42px; }
+    .msg.user .msg-time { padding-right: 42px; }
+
+    /* Typing indicator */
+    .typing-indicator {
+      display: none;
+      align-self: flex-start;
+      align-items: flex-end;
+      gap: 0.6rem;
+    }
+    .typing-indicator .msg-avatar { background: #0d9488; }
+    .typing-dots {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      border-bottom-left-radius: 4px;
+      padding: 0.7rem 1rem;
+      display: flex;
+      gap: 5px;
+      align-items: center;
+    }
+    .typing-dots span {
+      width: 7px; height: 7px;
+      background: #9ca3af;
+      border-radius: 50%;
+      animation: typingBounce 1.2s infinite ease-in-out;
+    }
+    .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typingBounce {
+      0%, 60%, 100% { transform: translateY(0); }
+      30%            { transform: translateY(-6px); }
+    }
+
+    /* Input area */
+    .chat-input-area {
+      padding: 1rem 1.25rem;
+      border-top: 1px solid #e5e7eb;
+      background: #fff;
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+    .chat-input {
+      flex: 1;
+      padding: 0.65rem 1rem;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 50px;
+      font-size: 0.93rem;
+      font-family: inherit;
+      color: #374151;
+      transition: border-color 0.2s;
+      background: #f9fafb;
+    }
+    .chat-input:focus {
+      outline: none;
+      border-color: #0d9488;
+      box-shadow: 0 0 0 3px rgba(13,148,136,0.12);
+    }
+    .chat-send-btn {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      background: #0d9488;
+      color: #fff;
+      border: none;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, transform 0.15s;
+      flex-shrink: 0;
+    }
+    .chat-send-btn:hover { background: #0f766e; transform: scale(1.05); }
+
+    /* Quick reply chips */
+    .quick-replies {
+      padding: 0.6rem 1.25rem 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      background: #fff;
+    }
+    .quick-reply-label {
+      width: 100%;
+      font-size: 0.76rem;
+      color: #9ca3af;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 0.25rem;
+    }
+    .qr-chip {
+      padding: 0.3rem 0.85rem;
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+      border-radius: 50px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #15803d;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .qr-chip:hover { background: #dcfce7; }
+
+    /* System message (date divider) */
+    .sys-msg {
+      text-align: center;
+      font-size: 0.78rem;
+      color: #9ca3af;
+      padding: 0.25rem 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== NAVIGATION BAR ===== -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="../index.html" class="nav-logo">Jingyu He</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="../index.html" class="nav-link">Home</a></li>
+        <li><a href="../about.html" class="nav-link">About Me</a></li>
+        <li><a href="../education.html" class="nav-link">Education</a></li>
+        <li><a href="../projects.html" class="nav-link active">Projects</a></li>
+        <li><a href="../experience.html" class="nav-link">Experience</a></li>
+        <li><a href="../documents.html" class="nav-link">Documents</a></li>
+        <li><a href="../contact.html" class="nav-link">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="demo-wrap">
+
+    <a href="../projects.html" class="back-link">&#8592; Back to Projects</a>
+
+    <div class="demo-header">
+      <div class="demo-header-icon">&#129302;</div>
+      <div>
+        <h1>AI Chatbot <span class="lang-badge">Python</span></h1>
+        <p>A rule-based chatbot that understands keywords and responds conversationally. Type anything and press Enter or click Send.</p>
+      </div>
+    </div>
+
+    <!-- Chat window -->
+    <div class="chat-window">
+
+      <!-- Header bar -->
+      <div class="chat-header">
+        <div class="chat-bot-avatar">&#129302;</div>
+        <div>
+          <div class="chat-bot-name">PyBot</div>
+          <div class="chat-bot-status"><span class="status-online"></span> Online</div>
+        </div>
+        <div class="chat-header-badge">Python &bull; Keyword Logic</div>
+      </div>
+
+      <!-- Messages -->
+      <div class="chat-messages" id="chatMessages">
+        <div class="sys-msg">Today</div>
+        <!-- Initial bot message added by JS -->
+      </div>
+
+      <!-- Typing indicator (hidden by default) -->
+      <div class="typing-indicator" id="typingIndicator" style="display:none; padding: 0 1.5rem 0.5rem;">
+        <div class="msg-avatar">&#129302;</div>
+        <div class="typing-dots">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+
+      <!-- Quick replies -->
+      <div class="quick-replies" id="quickReplies">
+        <div class="quick-reply-label">Try asking:</div>
+        <button class="qr-chip" onclick="sendQuick('Hello!')">Hello!</button>
+        <button class="qr-chip" onclick="sendQuick('What can you do?')">What can you do?</button>
+        <button class="qr-chip" onclick="sendQuick('Tell me about Python')">Tell me about Python</button>
+        <button class="qr-chip" onclick="sendQuick('Tell me a joke')">Tell me a joke</button>
+        <button class="qr-chip" onclick="sendQuick('What is your name?')">What is your name?</button>
+      </div>
+
+      <!-- Input area -->
+      <div class="chat-input-area">
+        <input
+          type="text"
+          id="chatInput"
+          class="chat-input"
+          placeholder="Type a message..."
+          maxlength="200"
+          onkeydown="handleKey(event)"
+        />
+        <button class="chat-send-btn" onclick="sendMessage()" title="Send">&#10148;</button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="container">
+      <p class="footer-name">Jingyu He</p>
+      <p class="footer-text">Computer Programming &amp; Analysis Student &mdash; George Brown College</p>
+      <p class="footer-copy">&copy; 2024 Jingyu He. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="../script.js"></script>
+  <script>
+    /* ===== CHATBOT LOGIC ===== */
+
+    // Knowledge base: arrays of [keywords[], response]
+    var rules = [
+      // Greetings
+      [["hello", "hi", "hey", "good morning", "good afternoon", "good evening", "howdy"],
+       "Hello! I'm PyBot. How can I help you today? You can ask me about programming, my creator Jingyu, or just chat!"],
+
+      // Name
+      [["your name", "who are you", "what are you"],
+       "I'm PyBot — a rule-based chatbot built with Python by Jingyu He. I use keyword matching to understand what you say and reply accordingly."],
+
+      // Creator
+      [["jingyu", "creator", "who made you", "who built you", "who created you"],
+       "I was built by Jingyu He, a Computer Programming and Analysis student at George Brown College in Toronto. This chatbot was one of his class projects!"],
+
+      // Python
+      [["python"],
+       "Python is a popular and easy-to-read programming language. It's great for beginners and is used in web development, data science, AI, and automation. Jingyu used Python to build me!"],
+
+      // Java
+      [["java"],
+       "Java is a powerful object-oriented programming language. It's widely used in enterprise applications and Android development. Jingyu also built a Banking App using Java!"],
+
+      // JavaScript
+      [["javascript", "js"],
+       "JavaScript is the main language of the web. It runs in browsers and can also run on the server using Node.js. Jingyu used it to make this portfolio interactive!"],
+
+      // Web development
+      [["web", "html", "css", "website", "webpage"],
+       "Web development involves creating websites using HTML (structure), CSS (style), and JavaScript (interactivity). Jingyu built this entire portfolio using only these three technologies — no frameworks needed!"],
+
+      // Node.js
+      [["node", "node.js", "backend", "server"],
+       "Node.js lets you use JavaScript on the server side. Jingyu built a backend web application using Node.js and Express as one of his projects. It handles routes and responds to HTTP requests."],
+
+      // School / GBC
+      [["george brown", "college", "school", "gbc", "toronto", "studying", "study"],
+       "Jingyu He is studying Computer Programming and Analysis at George Brown College in Toronto, Ontario. He started in September 2023 and is currently enrolled in the program."],
+
+      // Projects
+      [["projects", "what did you build", "portfolio"],
+       "Jingyu built 5 projects: a Web Scraper (Python), an AI Chatbot (that's me! — Python), a Banking App (Java), a Personal Website (HTML/CSS), and a Node.js backend application. Check the Projects page for details!"],
+
+      // Joke
+      [["joke", "funny", "laugh", "humor"],
+       "Sure! Here's one:\n\nWhy do programmers prefer dark mode?\n\nBecause light attracts bugs! 🐛😄"],
+
+      // Another joke trigger
+      [["another joke", "another one", "more jokes"],
+       "Okay:\n\nA SQL query walks into a bar, approaches two tables, and says... 'Can I JOIN you?' 😄"],
+
+      // Help
+      [["help", "what can you do", "commands", "options"],
+       "I can chat about:\n• Programming (Python, Java, JavaScript)\n• Jingyu He's projects and education\n• George Brown College\n• Tell you jokes\n• Answer basic questions\n\nJust type anything and I'll do my best!"],
+
+      // How are you
+      [["how are you", "how do you feel", "are you okay"],
+       "I'm doing great, thank you for asking! 😊 I'm always ready to chat. What's on your mind?"],
+
+      // Goodbye
+      [["bye", "goodbye", "see you", "later", "good night"],
+       "Goodbye! It was great talking with you. Feel free to come back anytime! 👋"],
+
+      // Thank you
+      [["thank you", "thanks", "thx", "thank"],
+       "You're welcome! Happy to help. Is there anything else you'd like to know? 😊"],
+
+      // Weather (out of scope)
+      [["weather", "temperature", "rain", "snow", "sun"],
+       "I'm not connected to a weather service, so I can't check the weather for you. But Toronto is usually cold in winter and warm in summer! 🌦️"],
+
+      // Age
+      [["how old", "age", "when were you created"],
+       "I was created in 2024 as a class project! In chatbot years, I'm still very young. 😄"],
+
+      // Gaming / hobbies
+      [["game", "gaming", "hobby", "hobbies", "fun"],
+       "I don't play games myself, but I think coding is pretty fun! Building projects and solving problems through code is a great way to spend time."],
+
+      // Food
+      [["food", "eat", "hungry", "meal", "restaurant"],
+       "Interesting! Jingyu actually has some work experience at restaurants — McDonald's, Hai Di Lao, and Gyubee Japanese Grill. Food and tech go well together! 🍔"],
+
+      // Future / career
+      [["job", "career", "future", "work", "developer"],
+       "Jingyu's goal is to become a software developer and work at a professional tech company. He is building skills and projects to prepare for entry-level developer positions. You can download his resume on the Documents page!"],
+    ];
+
+    // Default fallback response
+    var fallbacks = [
+      "I'm not sure I understand that. Try asking me about Python, Java, or Jingyu's projects!",
+      "Hmm, that's a tricky one! Could you rephrase it? I understand keywords like 'Python', 'projects', 'school', or 'joke'.",
+      "I didn't quite get that. I'm a simple keyword-based chatbot, so I work best with common topics like programming or education.",
+      "Good question! I'm not sure about that one. Try asking about my projects, programming languages, or say 'help' to see what I can discuss."
+    ];
+    var fallbackIndex = 0;
+
+    function getResponse(input) {
+      var lower = input.toLowerCase();
+      for (var i = 0; i < rules.length; i++) {
+        var keywords = rules[i][0];
+        for (var j = 0; j < keywords.length; j++) {
+          if (lower.includes(keywords[j])) {
+            return rules[i][1];
+          }
+        }
+      }
+      // Cycle through fallbacks
+      var reply = fallbacks[fallbackIndex % fallbacks.length];
+      fallbackIndex++;
+      return reply;
+    }
+
+    function getTime() {
+      var now = new Date();
+      var h = now.getHours().toString().padStart(2, "0");
+      var m = now.getMinutes().toString().padStart(2, "0");
+      return h + ":" + m;
+    }
+
+    function appendMessage(text, sender) {
+      var container = document.getElementById("chatMessages");
+
+      var wrapper = document.createElement("div");
+      wrapper.style.display = "flex";
+      wrapper.style.flexDirection = "column";
+      wrapper.style.alignItems = sender === "bot" ? "flex-start" : "flex-end";
+
+      var msgDiv = document.createElement("div");
+      msgDiv.className = "msg " + sender;
+
+      if (sender === "bot") {
+        msgDiv.innerHTML =
+          '<div class="msg-avatar">&#129302;</div>' +
+          '<div class="msg-bubble">' + text.replace(/\n/g, "<br>") + '</div>';
+      } else {
+        msgDiv.innerHTML =
+          '<div class="msg-bubble">' + escapeHtml(text) + '</div>';
+      }
+
+      var timeDiv = document.createElement("div");
+      timeDiv.className = "msg-time";
+      timeDiv.textContent = getTime();
+
+      wrapper.appendChild(msgDiv);
+      wrapper.appendChild(timeDiv);
+      container.appendChild(wrapper);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    }
+
+    function showTyping() {
+      var ind = document.getElementById("typingIndicator");
+      ind.style.display = "flex";
+      document.getElementById("chatMessages").scrollTop = 99999;
+    }
+
+    function hideTyping() {
+      document.getElementById("typingIndicator").style.display = "none";
+    }
+
+    function sendMessage() {
+      var input = document.getElementById("chatInput");
+      var text  = input.value.trim();
+      if (!text) return;
+
+      input.value = "";
+      appendMessage(text, "user");
+
+      showTyping();
+      var delay = 700 + Math.random() * 500;
+      setTimeout(function() {
+        hideTyping();
+        var response = getResponse(text);
+        appendMessage(response, "bot");
+      }, delay);
+    }
+
+    function sendQuick(text) {
+      document.getElementById("chatInput").value = text;
+      sendMessage();
+    }
+
+    function handleKey(e) {
+      if (e.key === "Enter") sendMessage();
+    }
+
+    // Initial bot greeting on page load
+    window.addEventListener("DOMContentLoaded", function() {
+      setTimeout(function() {
+        appendMessage("👋 Hi! I'm <strong>PyBot</strong>, an AI chatbot built with Python. I can answer questions about programming, Jingyu He's projects, or just have a simple conversation.<br><br>Try typing <em>\"Hello\"</em>, <em>\"Tell me about Python\"</em>, or <em>\"Tell me a joke\"</em>!", "bot");
+      }, 400);
+    });
+  </script>
+</body>
+</html>

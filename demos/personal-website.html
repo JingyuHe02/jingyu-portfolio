@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Personal Website Demo | Jingyu He</title>
+  <link rel="stylesheet" href="../style.css" />
+  <style>
+    /* ===== PERSONAL WEBSITE BUILDER DEMO ===== */
+
+    .demo-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 4rem;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #2563eb;
+      margin-bottom: 2rem;
+    }
+    .back-link:hover { text-decoration: underline; }
+
+    .demo-header {
+      background: linear-gradient(135deg, #1e293b, #713f12);
+      border-radius: 14px;
+      padding: 2rem 2.25rem;
+      margin-bottom: 2rem;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+    .demo-header-icon { font-size: 2.8rem; }
+    .demo-header h1  { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem; }
+    .demo-header p   { font-size: 0.92rem; color: #94a3b8; margin: 0; }
+    .lang-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.2rem 0.65rem;
+      border-radius: 50px;
+      margin-left: 0.5rem;
+    }
+
+    /* Main builder layout */
+    .builder-layout {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    /* Controls panel */
+    .controls-panel {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      position: sticky;
+      top: 80px;
+    }
+    .controls-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #1e293b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .ctrl-group { margin-bottom: 1.1rem; }
+    .ctrl-label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #374151;
+      display: block;
+      margin-bottom: 0.35rem;
+    }
+    .ctrl-input, .ctrl-select, .ctrl-textarea {
+      width: 100%;
+      padding: 0.6rem 0.85rem;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-family: inherit;
+      color: #374151;
+      background: #f9fafb;
+      transition: border-color 0.2s;
+    }
+    .ctrl-textarea { resize: vertical; min-height: 80px; }
+    .ctrl-input:focus, .ctrl-select:focus, .ctrl-textarea:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.10);
+    }
+
+    /* Color theme swatches */
+    .theme-swatches {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .swatch {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 3px solid transparent;
+      transition: transform 0.15s, border-color 0.15s;
+    }
+    .swatch:hover { transform: scale(1.15); }
+    .swatch.active { border-color: #1e293b; }
+
+    .controls-section-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #9ca3af;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 1.25rem 0 0.75rem;
+    }
+
+    /* Skills chips editor */
+    .skills-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 0.6rem;
+    }
+    .skill-chip-edit {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      border-radius: 50px;
+      padding: 0.25rem 0.5rem 0.25rem 0.85rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #374151;
+    }
+    .chip-remove {
+      background: #e5e7eb;
+      border: none;
+      border-radius: 50%;
+      width: 18px; height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: #6b7280;
+    }
+    .chip-remove:hover { background: #fca5a5; color: #b91c1c; }
+    .add-skill-row { display: flex; gap: 0.4rem; }
+    .add-skill-input {
+      flex: 1;
+      padding: 0.45rem 0.75rem;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-family: inherit;
+    }
+    .add-skill-input:focus { outline: none; border-color: #2563eb; }
+    .add-skill-btn {
+      padding: 0.45rem 0.85rem;
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .add-skill-btn:hover { background: #1d4ed8; }
+
+    /* ===== PREVIEW PANEL ===== */
+    .preview-outer {
+      background: #f1f5f9;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .preview-toolbar {
+      background: #fff;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 0.65rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .browser-dots span {
+      display: inline-block;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      margin-right: 4px;
+    }
+    .browser-dots .dot-r { background: #f87171; }
+    .browser-dots .dot-y { background: #fbbf24; }
+    .browser-dots .dot-g { background: #4ade80; }
+    .browser-url {
+      flex: 1;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 0.3rem 0.75rem;
+      font-size: 0.8rem;
+      font-family: 'Courier New', monospace;
+      color: #6b7280;
+    }
+
+    /* The actual preview website */
+    .preview-site {
+      background: #fff;
+      min-height: 640px;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+
+    /* Preview: nav */
+    .pv-nav {
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+    .pv-logo { font-size: 1.1rem; font-weight: 800; }
+    .pv-links { display: flex; gap: 1.25rem; font-size: 0.85rem; }
+    .pv-links a {
+      color: inherit;
+      text-decoration: none;
+      font-weight: 500;
+      opacity: 0.75;
+    }
+    .pv-links a:hover { opacity: 1; }
+
+    /* Preview: hero */
+    .pv-hero {
+      padding: 3.5rem 2rem 3rem;
+      text-align: center;
+    }
+    .pv-avatar {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #fff;
+      margin: 0 auto 1.25rem;
+    }
+    .pv-name     { font-size: 2.2rem; font-weight: 800; margin-bottom: 0.35rem; color: #1e293b; }
+    .pv-tagline  { font-size: 1rem; color: #6b7280; margin-bottom: 0.5rem; }
+    .pv-location { font-size: 0.88rem; color: #9ca3af; margin-bottom: 1.5rem; }
+    .pv-btn {
+      display: inline-block;
+      padding: 0.6rem 1.5rem;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    /* Preview: about */
+    .pv-section {
+      padding: 2rem;
+      border-top: 1px solid #f1f5f9;
+    }
+    .pv-section-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+      color: #1e293b;
+    }
+    .pv-bio { font-size: 0.9rem; color: #6b7280; line-height: 1.7; }
+
+    /* Preview: skills */
+    .pv-skills { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .pv-skill  {
+      padding: 0.3rem 0.85rem;
+      border-radius: 50px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    /* Preview: footer */
+    .pv-footer {
+      padding: 1.25rem 2rem;
+      text-align: center;
+      font-size: 0.78rem;
+      color: #9ca3af;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    @media (max-width: 768px) {
+      .builder-layout { grid-template-columns: 1fr; }
+      .controls-panel { position: static; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== NAVIGATION BAR ===== -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="../index.html" class="nav-logo">Jingyu He</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="../index.html" class="nav-link">Home</a></li>
+        <li><a href="../about.html" class="nav-link">About Me</a></li>
+        <li><a href="../education.html" class="nav-link">Education</a></li>
+        <li><a href="../projects.html" class="nav-link active">Projects</a></li>
+        <li><a href="../experience.html" class="nav-link">Experience</a></li>
+        <li><a href="../documents.html" class="nav-link">Documents</a></li>
+        <li><a href="../contact.html" class="nav-link">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="demo-wrap">
+
+    <a href="../projects.html" class="back-link">&#8592; Back to Projects</a>
+
+    <div class="demo-header">
+      <div class="demo-header-icon">&#127760;</div>
+      <div>
+        <h1>Personal Website Builder <span class="lang-badge">HTML &amp; CSS</span></h1>
+        <p>Edit the fields on the left and watch the website preview update instantly. Change the theme color, content, and skills.</p>
+      </div>
+    </div>
+
+    <div class="builder-layout">
+
+      <!-- ===== CONTROLS PANEL ===== -->
+      <div class="controls-panel">
+        <div class="controls-title">&#9998; Edit Your Website</div>
+
+        <!-- Personal Info -->
+        <div class="controls-section-label">Personal Info</div>
+
+        <div class="ctrl-group">
+          <label class="ctrl-label" for="ctrlName">Your Name</label>
+          <input type="text" id="ctrlName" class="ctrl-input" value="Jingyu He" maxlength="40" oninput="updatePreview()" />
+        </div>
+
+        <div class="ctrl-group">
+          <label class="ctrl-label" for="ctrlTitle">Job Title / Role</label>
+          <input type="text" id="ctrlTitle" class="ctrl-input" value="Software Developer" maxlength="60" oninput="updatePreview()" />
+        </div>
+
+        <div class="ctrl-group">
+          <label class="ctrl-label" for="ctrlLocation">Location</label>
+          <input type="text" id="ctrlLocation" class="ctrl-input" value="Toronto, Ontario, Canada" maxlength="50" oninput="updatePreview()" />
+        </div>
+
+        <div class="ctrl-group">
+          <label class="ctrl-label" for="ctrlBio">Bio</label>
+          <textarea id="ctrlBio" class="ctrl-textarea" maxlength="280" oninput="updatePreview()">Hi! I'm a Computer Programming and Analysis student at George Brown College. I enjoy building web applications and solving problems through code.</textarea>
+        </div>
+
+        <!-- Theme Color -->
+        <div class="controls-section-label">Theme Color</div>
+        <div class="theme-swatches" id="swatches">
+          <div class="swatch active" style="background:#2563eb;" data-color="#2563eb" onclick="setTheme(this)"></div>
+          <div class="swatch" style="background:#0d9488;" data-color="#0d9488" onclick="setTheme(this)"></div>
+          <div class="swatch" style="background:#dc2626;" data-color="#dc2626" onclick="setTheme(this)"></div>
+          <div class="swatch" style="background:#7c3aed;" data-color="#7c3aed" onclick="setTheme(this)"></div>
+          <div class="swatch" style="background:#d97706;" data-color="#d97706" onclick="setTheme(this)"></div>
+          <div class="swatch" style="background:#be185d;" data-color="#be185d" onclick="setTheme(this)"></div>
+          <div class="swatch" style="background:#15803d;" data-color="#15803d" onclick="setTheme(this)"></div>
+          <div class="swatch" style="background:#0e7490;" data-color="#0e7490" onclick="setTheme(this)"></div>
+        </div>
+
+        <!-- Skills -->
+        <div class="controls-section-label">Skills</div>
+        <div class="skills-chips" id="skillsChips"></div>
+        <div class="add-skill-row">
+          <input type="text" id="newSkillInput" class="add-skill-input" placeholder="Add a skill..." maxlength="25" onkeydown="if(event.key==='Enter') addSkill()" />
+          <button class="add-skill-btn" onclick="addSkill()">Add</button>
+        </div>
+
+      </div>
+
+      <!-- ===== PREVIEW PANEL ===== -->
+      <div class="preview-outer">
+        <div class="preview-toolbar">
+          <div class="browser-dots">
+            <span class="dot-r"></span>
+            <span class="dot-y"></span>
+            <span class="dot-g"></span>
+          </div>
+          <div class="browser-url" id="browserUrl">index.html</div>
+        </div>
+
+        <div class="preview-site" id="previewSite">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="container">
+      <p class="footer-name">Jingyu He</p>
+      <p class="footer-text">Computer Programming &amp; Analysis Student &mdash; George Brown College</p>
+      <p class="footer-copy">&copy; 2024 Jingyu He. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="../script.js"></script>
+  <script>
+    /* ===== WEBSITE BUILDER LOGIC ===== */
+
+    var themeColor = "#2563eb";
+    var skills = ["HTML", "CSS", "JavaScript", "Python", "Java"];
+
+    function escH(s) {
+      return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    }
+
+    function getInitials(name) {
+      return name.trim().split(/\s+/).map(function(w){ return w[0] || ""; }).join("").toUpperCase().slice(0,2) || "?";
+    }
+
+    function setTheme(el) {
+      themeColor = el.getAttribute("data-color");
+      document.querySelectorAll(".swatch").forEach(function(s){ s.classList.remove("active"); });
+      el.classList.add("active");
+      updatePreview();
+    }
+
+    function renderSkillChips() {
+      var container = document.getElementById("skillsChips");
+      container.innerHTML = "";
+      skills.forEach(function(s, i) {
+        var chip = document.createElement("div");
+        chip.className = "skill-chip-edit";
+        chip.innerHTML = escH(s) + '<button class="chip-remove" onclick="removeSkill(' + i + ')" title="Remove">&#10005;</button>';
+        container.appendChild(chip);
+      });
+    }
+
+    function addSkill() {
+      var input = document.getElementById("newSkillInput");
+      var val   = input.value.trim();
+      if (!val) return;
+      if (skills.length >= 12) { alert("Maximum 12 skills."); return; }
+      skills.push(val);
+      input.value = "";
+      renderSkillChips();
+      updatePreview();
+    }
+
+    function removeSkill(i) {
+      skills.splice(i, 1);
+      renderSkillChips();
+      updatePreview();
+    }
+
+    function updatePreview() {
+      var name     = document.getElementById("ctrlName").value || "Your Name";
+      var title    = document.getElementById("ctrlTitle").value || "Developer";
+      var location = document.getElementById("ctrlLocation").value || "Location";
+      var bio      = document.getElementById("ctrlBio").value || "";
+      var initials = getInitials(name);
+
+      // Build skills HTML
+      var skillsHtml = skills.map(function(s) {
+        return '<span class="pv-skill" style="background:' + themeColor + '">' + escH(s) + '</span>';
+      }).join("");
+
+      // Nav links color
+      var navStyle = "background:" + themeColor + ";";
+
+      document.getElementById("browserUrl").textContent = escH(name).replace(/\s+/, "-").toLowerCase() + ".github.io";
+
+      document.getElementById("previewSite").innerHTML =
+        // Nav
+        '<div class="pv-nav" style="' + navStyle + 'color:#fff;">' +
+          '<div class="pv-logo" style="color:#fff;">' + escH(name) + '</div>' +
+          '<div class="pv-links" style="color:#fff;">' +
+            '<a style="color:rgba(255,255,255,0.85);" href="#">About</a>' +
+            '<a style="color:rgba(255,255,255,0.85);" href="#">Projects</a>' +
+            '<a style="color:rgba(255,255,255,0.85);" href="#">Contact</a>' +
+          '</div>' +
+        '</div>' +
+
+        // Hero
+        '<div class="pv-hero">' +
+          '<div class="pv-avatar" style="background:' + themeColor + ';">' + escH(initials) + '</div>' +
+          '<div class="pv-name">' + escH(name) + '</div>' +
+          '<div class="pv-tagline">' + escH(title) + '</div>' +
+          '<div class="pv-location">&#128205; ' + escH(location) + '</div>' +
+          '<a class="pv-btn" style="background:' + themeColor + ';" href="#">Contact Me</a>' +
+        '</div>' +
+
+        // About
+        '<div class="pv-section">' +
+          '<div class="pv-section-title">About Me</div>' +
+          '<div class="pv-bio">' + escH(bio).replace(/\n/g, "<br>") + '</div>' +
+        '</div>' +
+
+        // Skills
+        (skills.length > 0 ?
+          '<div class="pv-section">' +
+            '<div class="pv-section-title">Skills</div>' +
+            '<div class="pv-skills">' + skillsHtml + '</div>' +
+          '</div>'
+          : "") +
+
+        // Footer
+        '<div class="pv-footer">&copy; 2024 ' + escH(name) + '. All rights reserved.</div>';
+    }
+
+    // Initialize
+    renderSkillChips();
+    updatePreview();
+  </script>
+</body>
+</html>

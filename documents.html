@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Documents | Jingyu He</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ===== NAVIGATION BAR ===== -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">Jingyu He</a>
+
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="about.html" class="nav-link">About Me</a></li>
+        <li><a href="education.html" class="nav-link">Education</a></li>
+        <li><a href="projects.html" class="nav-link">Projects</a></li>
+        <li><a href="experience.html" class="nav-link">Experience</a></li>
+        <li><a href="documents.html" class="nav-link active">Documents</a></li>
+        <li><a href="contact.html" class="nav-link">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ===== PAGE HEADER ===== -->
+  <section class="page-header">
+    <div class="container">
+      <h1 class="page-title">Documents</h1>
+      <p class="page-subtitle">Download my resume and cover letter for job applications.</p>
+    </div>
+  </section>
+
+  <!-- ===== DOCUMENTS SECTION ===== -->
+  <section class="section">
+    <div class="container">
+
+      <div class="doc-grid">
+
+        <!-- Resume Card -->
+        <div class="doc-card">
+          <div class="doc-icon-box doc-icon-blue">
+            <span class="doc-icon">&#128196;</span>
+          </div>
+          <div class="doc-body">
+            <h2 class="doc-title">Resume</h2>
+            <p class="doc-desc">
+              My resume includes my education, work experience, technical skills, and
+              personal projects. It is written for entry-level software developer positions.
+            </p>
+            <ul class="doc-includes">
+              <li>&#10003; Education at George Brown College</li>
+              <li>&#10003; Work experience in food service</li>
+              <li>&#10003; Programming skills (Python, Java, JavaScript)</li>
+              <li>&#10003; Portfolio projects</li>
+            </ul>
+            <div class="doc-actions">
+              <!-- Replace href="#" with the actual file path when available, e.g., href="assets/resume.pdf" -->
+              <a href="assets/resume.pdf" class="btn btn-primary" target="_blank">
+                &#11123; Download Resume (PDF)
+              </a>
+              <p class="doc-note">File: assets/resume.pdf &mdash; Replace with your actual PDF file.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cover Letter Card -->
+        <div class="doc-card">
+          <div class="doc-icon-box doc-icon-teal">
+            <span class="doc-icon">&#128233;</span>
+          </div>
+          <div class="doc-body">
+            <h2 class="doc-title">Cover Letter</h2>
+            <p class="doc-desc">
+              My cover letter introduces who I am, why I am interested in software
+              development, and what value I can bring to a company as an entry-level
+              developer.
+            </p>
+            <ul class="doc-includes">
+              <li>&#10003; Introduction and background</li>
+              <li>&#10003; Career goals and motivation</li>
+              <li>&#10003; Relevant skills and projects</li>
+              <li>&#10003; Professional closing</li>
+            </ul>
+            <div class="doc-actions">
+              <!-- Replace href="#" with the actual file path when available, e.g., href="assets/cover-letter.pdf" -->
+              <a href="assets/cover-letter.pdf" class="btn btn-primary" target="_blank">
+                &#11123; Download Cover Letter (PDF)
+              </a>
+              <p class="doc-note">File: assets/cover-letter.pdf &mdash; Replace with your actual PDF file.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== HOW TO ADD FILES SECTION ===== -->
+  <section class="section section-alt">
+    <div class="container">
+      <h2 class="section-title">How to Add Your Files</h2>
+      <div class="instructions-box">
+        <p>To connect your actual resume and cover letter PDF files to this page, follow these steps:</p>
+        <ol class="instructions-list">
+          <li>Save your resume as <strong>resume.pdf</strong> inside the <code>assets/</code> folder.</li>
+          <li>Save your cover letter as <strong>cover-letter.pdf</strong> inside the <code>assets/</code> folder.</li>
+          <li>The buttons above will automatically link to those files once the PDFs are placed in the correct folder.</li>
+        </ol>
+        <p class="instructions-note">
+          &#128204; The <code>assets/</code> folder is located inside your main project folder:
+          <code>Portfolio_Development_Project/assets/</code>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="container">
+      <p class="footer-name">Jingyu He</p>
+      <p class="footer-text">Computer Programming &amp; Analysis Student &mdash; George Brown College</p>
+      <div class="footer-links">
+        <a href="contact.html">Contact</a>
+        <a href="projects.html">Projects</a>
+        <a href="about.html">About Me</a>
+      </div>
+      <div class="footer-social">
+        <a href="mailto:hejingyu1104@gmail.com">&#128231; hejingyu1104@gmail.com</a>
+        <a href="https://github.com/JingyuHe02" target="_blank" rel="noopener">&#128029; github.com/JingyuHe02</a>
+        <a href="https://www.linkedin.com/in/%E9%9D%96%E5%AE%87-%E4%BD%95-3a275b269/" target="_blank" rel="noopener">&#128101; LinkedIn Profile</a>
+      </div>
+      <p class="footer-copy">&copy; 2024 Jingyu He. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

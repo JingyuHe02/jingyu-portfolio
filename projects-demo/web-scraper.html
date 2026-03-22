@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DataHarvest — Web Scraper</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #1a1a2e; min-height: 100vh; }
+    a { text-decoration: none; }
+    code { font-family: 'Courier New', monospace; }
+
+    /* ── TOP BAR ── */
+    .topbar {
+      background: #0f172a;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      padding: 0 1.5rem;
+      gap: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    }
+    .topbar-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.3px;
+    }
+    .topbar-logo-icon {
+      width: 30px; height: 30px;
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+    }
+    .topbar-sep { width: 1px; height: 24px; background: rgba(255,255,255,0.12); }
+    .topbar-page { font-size: 0.88rem; color: #94a3b8; font-weight: 500; }
+    .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 0.75rem; }
+    .topbar-badge {
+      background: rgba(59,130,246,0.2);
+      color: #60a5fa;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.2rem 0.65rem;
+      border-radius: 50px;
+    }
+    .back-topbtn {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 0.3rem 0.85rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .back-topbtn:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+    /* ── LAYOUT ── */
+    .app-layout { display: grid; grid-template-columns: 230px 1fr; min-height: calc(100vh - 56px); }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      background: #1e293b;
+      padding: 1.5rem 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .sidebar-section-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 0 1.25rem;
+      margin: 0.75rem 0 0.4rem;
+    }
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 0.55rem 1.25rem;
+      font-size: 0.88rem;
+      color: #94a3b8;
+      cursor: pointer;
+      transition: all 0.15s;
+      border-left: 3px solid transparent;
+    }
+    .sidebar-item:hover { background: rgba(255,255,255,0.05); color: #e2e8f0; }
+    .sidebar-item.active { background: rgba(59,130,246,0.12); color: #60a5fa; border-left-color: #3b82f6; }
+    .sidebar-item-icon { font-size: 1rem; width: 18px; text-align: center; }
+    .sidebar-count {
+      margin-left: auto;
+      background: #334155;
+      color: #94a3b8;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.1rem 0.5rem;
+      border-radius: 50px;
+    }
+    .sidebar-bottom { margin-top: auto; padding: 1rem 1.25rem; border-top: 1px solid #334155; }
+    .sidebar-status { font-size: 0.78rem; color: #475569; display: flex; align-items: center; gap: 0.4rem; }
+    .online-dot { width: 7px; height: 7px; background: #4ade80; border-radius: 50%; }
+
+    /* ── MAIN ── */
+    .main { padding: 2rem; overflow-y: auto; }
+
+    /* Input card */
+    .scraper-input-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 1.75rem 2rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      border: 1px solid #e2e8f0;
+      margin-bottom: 1.5rem;
+    }
+    .card-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #64748b;
+      margin-bottom: 1rem;
+    }
+    .url-form { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+    .url-field {
+      flex: 1;
+      min-width: 240px;
+      padding: 0.7rem 1.1rem;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 9px;
+      font-size: 0.92rem;
+      font-family: 'Courier New', monospace;
+      color: #1e293b;
+      background: #f8fafc;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .url-field:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.12); }
+    .url-select {
+      padding: 0.7rem 1rem;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 9px;
+      font-size: 0.88rem;
+      font-family: inherit;
+      color: #374151;
+      background: #f8fafc;
+    }
+    .url-select:focus { outline: none; border-color: #3b82f6; }
+    .scrape-btn {
+      padding: 0.7rem 1.6rem;
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 9px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      white-space: nowrap;
+    }
+    .scrape-btn:hover { background: #1d4ed8; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(37,99,235,0.3); }
+    .scrape-btn:disabled { background: #93c5fd; transform: none; box-shadow: none; cursor: not-allowed; }
+
+    /* Presets */
+    .preset-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #f1f5f9; }
+    .preset-label { font-size: 0.78rem; font-weight: 600; color: #94a3b8; align-self: center; margin-right: 0.25rem; }
+    .preset-chip {
+      padding: 0.3rem 0.8rem;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .preset-chip:hover { background: #dbeafe; border-color: #93c5fd; color: #1d4ed8; }
+
+    /* Progress */
+    .progress-card {
+      display: none;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 1.5rem 2rem;
+      margin-bottom: 1.5rem;
+    }
+    .progress-title { font-size: 0.88rem; font-weight: 700; color: #1e293b; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+    .spinner { width: 16px; height: 16px; border: 2px solid #e2e8f0; border-top-color: #3b82f6; border-radius: 50%; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .progress-steps { display: flex; flex-direction: column; gap: 0.5rem; }
+    .progress-step { display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem; color: #64748b; }
+    .step-icon { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; flex-shrink: 0; }
+    .step-done    { background: #dcfce7; color: #16a34a; }
+    .step-running { background: #dbeafe; color: #2563eb; }
+    .step-wait    { background: #f1f5f9; color: #94a3b8; }
+    .progress-bar-outer { height: 6px; background: #f1f5f9; border-radius: 50px; overflow: hidden; margin-top: 1rem; }
+    .progress-bar-inner { height: 100%; background: linear-gradient(90deg, #3b82f6, #06b6d4); border-radius: 50px; width: 0; transition: width 0.4s ease; }
+
+    /* Stats row */
+    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+    .stat-card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .stat-icon-box {
+      width: 44px; height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+    .stat-icon-blue   { background: #dbeafe; }
+    .stat-icon-green  { background: #dcfce7; }
+    .stat-icon-purple { background: #ede9fe; }
+    .stat-icon-orange { background: #fef3c7; }
+    .stat-num   { font-size: 1.5rem; font-weight: 800; color: #1e293b; line-height: 1; margin-bottom: 0.2rem; }
+    .stat-lbl   { font-size: 0.75rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.4px; }
+
+    /* Results table card */
+    .results-card {
+      display: none;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+    .results-head {
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #f1f5f9;
+      background: #f8fafc;
+    }
+    .results-head-title { font-size: 0.88rem; font-weight: 700; color: #1e293b; }
+    .results-count-badge {
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.2rem 0.65rem;
+      border-radius: 50px;
+    }
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th { background: #f8fafc; padding: 0.7rem 1.25rem; text-align: left; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; border-bottom: 1px solid #e2e8f0; }
+    .data-table td { padding: 0.85rem 1.25rem; font-size: 0.86rem; color: #374151; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: #f8fafc; }
+    .td-url { font-family: 'Courier New', monospace; font-size: 0.8rem; color: #2563eb; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .td-title { font-weight: 600; color: #1e293b; max-width: 200px; }
+    .td-status { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 50px; font-size: 0.75rem; font-weight: 700; }
+    .status-200 { background: #dcfce7; color: #15803d; }
+    .status-404 { background: #fee2e2; color: #b91c1c; }
+    .status-301 { background: #fef3c7; color: #92400e; }
+    .td-size { color: #64748b; font-size: 0.82rem; }
+
+    /* JSON output */
+    .json-card {
+      display: none;
+      background: #0f172a;
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+      border: 1px solid #1e293b;
+    }
+    .json-head { padding: 0.75rem 1.25rem; background: #1e293b; display: flex; align-items: center; gap: 0.75rem; }
+    .json-dots span { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; }
+    .json-dots .d1 { background: #f87171; } .json-dots .d2 { background: #fbbf24; } .json-dots .d3 { background: #4ade80; }
+    .json-filename { font-size: 0.82rem; color: #64748b; font-family: 'Courier New', monospace; }
+    .json-actions { margin-left: auto; display: flex; gap: 0.5rem; }
+    .json-action-btn { background: rgba(255,255,255,0.06); border: none; color: #64748b; font-size: 0.75rem; padding: 0.25rem 0.65rem; border-radius: 5px; cursor: pointer; font-family: 'Courier New', monospace; transition: all 0.15s; }
+    .json-action-btn:hover { background: rgba(255,255,255,0.12); color: #e2e8f0; }
+    .json-body { padding: 1.25rem 1.5rem; font-family: 'Courier New', monospace; font-size: 0.82rem; line-height: 2; overflow-x: auto; }
+    .j-key    { color: #93c5fd; } .j-str  { color: #86efac; } .j-num  { color: #fbbf24; }
+    .j-bool   { color: #f472b6; } .j-null { color: #94a3b8; } .j-punc { color: #94a3b8; }
+
+    /* History */
+    .history-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; }
+    .history-list { max-height: 200px; overflow-y: auto; }
+    .hist-row { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1.25rem; border-bottom: 1px solid #f1f5f9; font-size: 0.84rem; }
+    .hist-row:last-child { border-bottom: none; }
+    .hist-dot { width: 8px; height: 8px; border-radius: 50%; background: #4ade80; flex-shrink: 0; }
+    .hist-url { color: #2563eb; font-family: 'Courier New', monospace; font-size: 0.8rem; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .hist-time { color: #94a3b8; font-size: 0.76rem; white-space: nowrap; }
+    .hist-cnt  { color: #64748b; font-size: 0.78rem; white-space: nowrap; }
+
+    /* Responsive */
+    @media (max-width: 900px) { .app-layout { grid-template-columns: 1fr; } .sidebar { display: none; } .stats-row { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 540px) { .stats-row { grid-template-columns: 1fr; } .main { padding: 1rem; } }
+  </style>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-logo">
+      <div class="topbar-logo-icon">&#128202;</div>
+      DataHarvest
+    </div>
+    <div class="topbar-sep"></div>
+    <span class="topbar-page">Web Scraper</span>
+    <div class="topbar-right">
+      <span class="topbar-badge">Python Project</span>
+      <a href="../projects.html" class="back-topbtn">&#8592; Back to Portfolio</a>
+    </div>
+  </div>
+
+  <div class="app-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-section-label">Navigation</div>
+      <div class="sidebar-item active"><span class="sidebar-item-icon">&#128202;</span> Scraper <span class="sidebar-count">Live</span></div>
+      <div class="sidebar-item"><span class="sidebar-item-icon">&#128203;</span> Saved Data <span class="sidebar-count" id="savedCount">0</span></div>
+      <div class="sidebar-item"><span class="sidebar-item-icon">&#9201;</span> History</div>
+      <div class="sidebar-item"><span class="sidebar-item-icon">&#128450;</span> Export</div>
+
+      <div class="sidebar-section-label">Settings</div>
+      <div class="sidebar-item"><span class="sidebar-item-icon">&#9881;</span> Config</div>
+      <div class="sidebar-item"><span class="sidebar-item-icon">&#128274;</span> User Agent</div>
+      <div class="sidebar-item"><span class="sidebar-item-icon">&#127760;</span> Proxy</div>
+
+      <div class="sidebar-bottom">
+        <div class="sidebar-status"><span class="online-dot"></span> requests 2.31.0</div>
+        <div class="sidebar-status" style="margin-top:0.4rem;"><span class="online-dot" style="background:#60a5fa;"></span> Python 3.11.4</div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+
+      <!-- Input card -->
+      <div class="scraper-input-card">
+        <div class="card-title">&#128279; Target URL — Enter a URL to Extract Data</div>
+        <div class="url-form">
+          <input type="text" class="url-field" id="urlInput" value="https://en.wikipedia.org/wiki/Python_(programming_language)" placeholder="https://example.com" />
+          <select class="url-select" id="depthSelect">
+            <option value="1">Depth: 1</option>
+            <option value="2">Depth: 2</option>
+            <option value="3">Depth: 3</option>
+          </select>
+          <select class="url-select" id="formatSelect">
+            <option value="json">Output: JSON</option>
+            <option value="csv">Output: CSV</option>
+            <option value="xml">Output: XML</option>
+          </select>
+          <button class="scrape-btn" id="scrapeBtn" onclick="runScraper()">
+            &#128202; Scrape URL
+          </button>
+        </div>
+        <div class="preset-row">
+          <span class="preset-label">Presets:</span>
+          <span class="preset-chip" onclick="setUrl('https://en.wikipedia.org/wiki/Python_(programming_language)')">Wikipedia — Python</span>
+          <span class="preset-chip" onclick="setUrl('https://github.com/trending')">GitHub Trending</span>
+          <span class="preset-chip" onclick="setUrl('https://news.ycombinator.com')">Hacker News</span>
+          <span class="preset-chip" onclick="setUrl('https://realpython.com')">Real Python</span>
+          <span class="preset-chip" onclick="setUrl('https://www.python.org')">Python.org</span>
+        </div>
+      </div>
+
+      <!-- Progress card -->
+      <div class="progress-card" id="progressCard">
+        <div class="progress-title"><div class="spinner"></div> Extracting data from <span id="progressUrl" style="font-family:monospace;font-size:0.85rem;color:#3b82f6;margin-left:0.25rem;"></span></div>
+        <div class="progress-steps" id="progressSteps"></div>
+        <div class="progress-bar-outer"><div class="progress-bar-inner" id="progressBar"></div></div>
+      </div>
+
+      <!-- Stats row (hidden initially) -->
+      <div class="stats-row" id="statsRow" style="display:none;">
+        <div class="stat-card">
+          <div class="stat-icon-box stat-icon-blue">&#128279;</div>
+          <div><div class="stat-num" id="sLinks">0</div><div class="stat-lbl">Links Found</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-box stat-icon-green">&#128247;</div>
+          <div><div class="stat-num" id="sImages">0</div><div class="stat-lbl">Images</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-box stat-icon-purple">&#128196;</div>
+          <div><div class="stat-num" id="sWords">0</div><div class="stat-lbl">Words</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-box stat-icon-orange">&#9201;</div>
+          <div><div class="stat-num" id="sTime">0ms</div><div class="stat-lbl">Fetch Time</div></div>
+        </div>
+      </div>
+
+      <!-- Results table -->
+      <div class="results-card" id="resultsCard">
+        <div class="results-head">
+          <span class="results-head-title">&#128203; Extracted Links — Structured Data</span>
+          <span class="results-count-badge" id="resultsBadge">0 rows</span>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>URL</th>
+              <th>Page Title</th>
+              <th>Status</th>
+              <th>Type</th>
+              <th>Size</th>
+            </tr>
+          </thead>
+          <tbody id="resultsBody"></tbody>
+        </table>
+      </div>
+
+      <!-- JSON output -->
+      <div class="json-card" id="jsonCard">
+        <div class="json-head">
+          <div class="json-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+          <span class="json-filename" id="jsonFilename">output.json</span>
+          <div class="json-actions">
+            <button class="json-action-btn" onclick="copiedMsg()">copy</button>
+            <button class="json-action-btn">save</button>
+          </div>
+        </div>
+        <div class="json-body" id="jsonBody"></div>
+      </div>
+
+      <!-- Scrape history -->
+      <div class="history-card" id="historyCard" style="display:none;">
+        <div class="results-head">
+          <span class="results-head-title">&#9201; Scrape History</span>
+          <span class="results-count-badge" id="historyBadge">0 records</span>
+        </div>
+        <div class="history-list" id="historyList"></div>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    /* ── DATA ── */
+    var db = {
+      "wikipedia": {
+        title: "Python (programming language)", links: 31, images: 9, words: 4102, time: 287,
+        rows: [
+          ["https://en.wikipedia.org/wiki/Programming_language","Programming language","200","internal","18 KB"],
+          ["https://en.wikipedia.org/wiki/Guido_van_Rossum","Guido van Rossum","200","internal","12 KB"],
+          ["https://en.wikipedia.org/wiki/Object-oriented_programming","Object-oriented programming","200","internal","22 KB"],
+          ["https://en.wikipedia.org/wiki/Dynamic_typing","Dynamic typing","200","internal","9 KB"],
+          ["https://en.wikipedia.org/wiki/CPython","CPython","200","internal","14 KB"],
+          ["https://docs.python.org/3/","Python 3 Docs","200","external","67 KB"],
+          ["https://pypi.org","PyPI — Python Package Index","200","external","44 KB"],
+          ["https://en.wikipedia.org/wiki/Open-source_software","Open-source software","200","internal","19 KB"],
+        ]
+      },
+      "github": {
+        title: "GitHub Trending Repositories", links: 54, images: 22, words: 1380, time: 512,
+        rows: [
+          ["https://github.com/trending/python","Trending Python","200","internal","28 KB"],
+          ["https://github.com/trending/javascript","Trending JavaScript","200","internal","31 KB"],
+          ["https://github.com/features/copilot","GitHub Copilot","200","internal","52 KB"],
+          ["https://github.com/explore","Explore","200","internal","24 KB"],
+          ["https://github.com/topics/machine-learning","Machine Learning Topic","200","internal","19 KB"],
+          ["https://github.com/topics/react","React Topic","200","internal","17 KB"],
+          ["https://docs.github.com","GitHub Docs","301","external","—"],
+          ["https://github.com/about","About GitHub","200","internal","11 KB"],
+        ]
+      },
+      "hackernews": {
+        title: "Hacker News", links: 48, images: 0, words: 914, time: 163,
+        rows: [
+          ["https://news.ycombinator.com/newest","New Stories","200","internal","12 KB"],
+          ["https://news.ycombinator.com/ask","Ask HN","200","internal","9 KB"],
+          ["https://news.ycombinator.com/show","Show HN","200","internal","8 KB"],
+          ["https://news.ycombinator.com/jobs","Jobs","200","internal","6 KB"],
+          ["https://news.ycombinator.com/submit","Submit","200","internal","4 KB"],
+          ["https://ycombinator.com","Y Combinator","200","external","88 KB"],
+          ["https://news.ycombinator.com/user?id=pg","User pg","200","internal","3 KB"],
+        ]
+      },
+      "realpython": {
+        title: "Real Python Tutorials", links: 42, images: 18, words: 1745, time: 298,
+        rows: [
+          ["https://realpython.com/tutorials/all/","All Tutorials","200","internal","34 KB"],
+          ["https://realpython.com/python-web-scraping-practical-introduction/","Web Scraping Guide","200","internal","44 KB"],
+          ["https://realpython.com/beautiful-soup-web-scraper-python/","BeautifulSoup Tutorial","200","internal","38 KB"],
+          ["https://realpython.com/python-requests/","Requests Library","200","internal","29 KB"],
+          ["https://realpython.com/courses/","Courses","200","internal","22 KB"],
+          ["https://realpython.com/python-basics/","Python Basics","200","internal","19 KB"],
+          ["https://twitter.com/realpython","Real Python Twitter","404","external","—"],
+        ]
+      },
+      "python": {
+        title: "Python.org — Official Site", links: 38, images: 12, words: 2230, time: 341,
+        rows: [
+          ["https://www.python.org/downloads/","Downloads","200","internal","31 KB"],
+          ["https://docs.python.org/3/","Documentation","200","internal","67 KB"],
+          ["https://pypi.org","PyPI","200","external","44 KB"],
+          ["https://www.python.org/community/","Community","200","internal","22 KB"],
+          ["https://www.python.org/jobs/","Jobs","200","internal","18 KB"],
+          ["https://www.python.org/about/","About Python","200","internal","15 KB"],
+          ["https://blog.python.org","Python Blog","200","external","29 KB"],
+        ]
+      },
+      "default": {
+        title: "Scraped Page", links: 14, images: 5, words: 620, time: 289,
+        rows: [
+          ["https://example.com/about","About Page","200","internal","8 KB"],
+          ["https://example.com/contact","Contact Page","200","internal","6 KB"],
+          ["https://example.com/products","Products","200","internal","14 KB"],
+          ["https://example.com/blog","Blog","200","internal","22 KB"],
+          ["https://example.com/sitemap.xml","Sitemap","200","internal","4 KB"],
+          ["https://cdn.example.com/logo.png","Logo Image","200","asset","80 KB"],
+        ]
+      }
+    };
+
+    var history = [];
+
+    function setUrl(u) { document.getElementById("urlInput").value = u; }
+
+    function getKey(url) {
+      if (url.includes("wikipedia")) return "wikipedia";
+      if (url.includes("github"))    return "github";
+      if (url.includes("ycombinator") || url.includes("hacker")) return "hackernews";
+      if (url.includes("realpython")) return "realpython";
+      if (url.includes("python.org")) return "python";
+      return "default";
+    }
+
+    function ts() { return new Date().toTimeString().slice(0,8); }
+
+    function runScraper() {
+      var url = document.getElementById("urlInput").value.trim();
+      if (!url) return;
+      if (!url.startsWith("http")) url = "https://" + url;
+
+      var btn = document.getElementById("scrapeBtn");
+      btn.disabled = true;
+      btn.textContent = "Scraping...";
+
+      // Show progress
+      document.getElementById("progressCard").style.display = "block";
+      document.getElementById("statsRow").style.display = "none";
+      document.getElementById("resultsCard").style.display = "none";
+      document.getElementById("jsonCard").style.display = "none";
+      document.getElementById("progressUrl").textContent = url.length > 50 ? url.slice(0,50)+"..." : url;
+
+      var steps = [
+        { label: "Resolving DNS and connecting...", pct: 15 },
+        { label: "Sending GET request (requests.get)...", pct: 35 },
+        { label: "Receiving HTTP 200 response...", pct: 55 },
+        { label: "Parsing HTML with BeautifulSoup...", pct: 72 },
+        { label: "Extracting &lt;a&gt;, &lt;img&gt; tags, text...", pct: 88 },
+        { label: "Saving output to JSON file...", pct: 100 },
+      ];
+
+      var stepsEl = document.getElementById("progressSteps");
+      var bar = document.getElementById("progressBar");
+      stepsEl.innerHTML = "";
+      steps.forEach(function(s, i) {
+        var d = document.createElement("div");
+        d.className = "progress-step"; d.id = "step-" + i;
+        d.innerHTML = '<div class="step-icon step-wait">&#9675;</div><span>' + s.label + '</span>';
+        stepsEl.appendChild(d);
+      });
+
+      var i = 0;
+      function next() {
+        if (i > 0) {
+          var prev = document.getElementById("step-" + (i-1));
+          if (prev) { prev.querySelector(".step-icon").className = "step-icon step-done"; prev.querySelector(".step-icon").textContent = "✓"; }
+        }
+        if (i >= steps.length) {
+          document.getElementById("progressCard").style.display = "none";
+          btn.disabled = false; btn.textContent = "▶ Scrape URL"; btn.innerHTML = "&#128202; Scrape URL";
+          showResults(url);
+          return;
+        }
+        var el = document.getElementById("step-" + i);
+        if (el) { el.querySelector(".step-icon").className = "step-icon step-running"; el.querySelector(".step-icon").textContent = "●"; }
+        bar.style.width = steps[i].pct + "%";
+        i++;
+        setTimeout(next, 420);
+      }
+      next();
+    }
+
+    function showResults(url) {
+      var key  = getKey(url);
+      var data = db[key];
+      var fmt  = document.getElementById("formatSelect").value;
+
+      document.getElementById("sLinks").textContent  = data.links;
+      document.getElementById("sImages").textContent = data.images;
+      document.getElementById("sWords").textContent  = data.words.toLocaleString();
+      document.getElementById("sTime").textContent   = data.time + "ms";
+      document.getElementById("statsRow").style.display = "grid";
+
+      // Results table
+      var body = document.getElementById("resultsBody");
+      body.innerHTML = "";
+      data.rows.forEach(function(row, idx) {
+        var statusClass = row[2] === "200" ? "status-200" : row[2] === "301" ? "status-301" : "status-404";
+        var tr = document.createElement("tr");
+        tr.innerHTML =
+          '<td style="color:#94a3b8;font-size:0.78rem;">' + (idx+1) + '</td>' +
+          '<td class="td-url">' + esc(row[0]) + '</td>' +
+          '<td class="td-title">' + esc(row[1]) + '</td>' +
+          '<td><span class="td-status ' + statusClass + '">' + row[2] + '</span></td>' +
+          '<td style="color:#64748b;font-size:0.82rem;">' + esc(row[3]) + '</td>' +
+          '<td class="td-size">' + esc(row[4]) + '</td>';
+        body.appendChild(tr);
+      });
+      document.getElementById("resultsBadge").textContent = data.rows.length + " rows";
+      document.getElementById("resultsCard").style.display = "block";
+
+      // JSON output
+      var filename = url.replace(/https?:\/\//,"").replace(/[^\w]/g,"_").slice(0,30) + "." + fmt;
+      document.getElementById("jsonFilename").textContent = filename;
+      var jsonHtml =
+        '<span class="j-punc">{</span><br>' +
+        '  <span class="j-key">"url"</span><span class="j-punc">: </span><span class="j-str">"' + esc(url) + '"</span><span class="j-punc">,</span><br>' +
+        '  <span class="j-key">"title"</span><span class="j-punc">: </span><span class="j-str">"' + esc(data.title) + '"</span><span class="j-punc">,</span><br>' +
+        '  <span class="j-key">"scraped_at"</span><span class="j-punc">: </span><span class="j-str">"' + new Date().toISOString() + '"</span><span class="j-punc">,</span><br>' +
+        '  <span class="j-key">"stats"</span><span class="j-punc">: {</span><br>' +
+        '    <span class="j-key">"links"</span><span class="j-punc">: </span><span class="j-num">' + data.links + '</span><span class="j-punc">,</span><br>' +
+        '    <span class="j-key">"images"</span><span class="j-punc">: </span><span class="j-num">' + data.images + '</span><span class="j-punc">,</span><br>' +
+        '    <span class="j-key">"words"</span><span class="j-punc">: </span><span class="j-num">' + data.words + '</span><span class="j-punc">,</span><br>' +
+        '    <span class="j-key">"fetch_time_ms"</span><span class="j-punc">: </span><span class="j-num">' + data.time + '</span><br>' +
+        '  <span class="j-punc">},</span><br>' +
+        '  <span class="j-key">"links"</span><span class="j-punc">: [</span><br>';
+      data.rows.slice(0,4).forEach(function(row) {
+        jsonHtml += '    <span class="j-punc">{ </span><span class="j-key">"href"</span><span class="j-punc">: </span><span class="j-str">"' + esc(row[0]) + '"</span><span class="j-punc">,</span> <span class="j-key">"text"</span><span class="j-punc">: </span><span class="j-str">"' + esc(row[1]) + '"</span> <span class="j-punc">},</span><br>';
+      });
+      jsonHtml += '    <span class="j-null">... ' + (data.rows.length - 4) + ' more items</span><br>  <span class="j-punc">]</span><br><span class="j-punc">}</span>';
+      document.getElementById("jsonBody").innerHTML = jsonHtml;
+      document.getElementById("jsonCard").style.display = "block";
+
+      // History
+      var now = new Date();
+      history.unshift({ url: url, time: ts(), links: data.links });
+      document.getElementById("savedCount").textContent = history.length;
+      var hList = document.getElementById("historyList");
+      hList.innerHTML = "";
+      history.forEach(function(h) {
+        var row = document.createElement("div");
+        row.className = "hist-row";
+        row.innerHTML =
+          '<div class="hist-dot"></div>' +
+          '<span class="hist-url">' + esc(h.url) + '</span>' +
+          '<span class="hist-cnt">' + h.links + ' links</span>' +
+          '<span class="hist-time">' + h.time + '</span>';
+        hList.appendChild(row);
+      });
+      document.getElementById("historyBadge").textContent = history.length + " records";
+      document.getElementById("historyCard").style.display = "block";
+    }
+
+    function copiedMsg() { alert("Copied to clipboard! (demo)"); }
+    function esc(s) { return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  </script>
+</body>
+</html>
